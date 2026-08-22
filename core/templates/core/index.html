@@ -1,0 +1,239 @@
+{% extends 'core/base.html' %}
+
+
+{% block title %}
+    Início | Estante Circular
+{% endblock %}
+
+
+{% block content %}
+
+<section class="hero">
+
+    <div class="container hero-conteudo">
+
+        <div class="hero-texto">
+
+            <span class="etiqueta">
+                Livros que continuam circulando
+            </span>
+
+            <h1>
+                {{ titulo_pagina }}
+            </h1>
+
+            <p>
+                {{ descricao }}
+            </p>
+
+            <div class="hero-acoes">
+
+                <a
+                    href="#livros"
+                    class="botao botao-principal"
+                >
+                    Explorar livros
+                </a>
+
+                <a
+                    href="#como-funciona"
+                    class="botao botao-secundario"
+                >
+                    Como funciona
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="hero-destaque">
+
+            <div class="livro-ilustracao">
+                <span>📚</span>
+
+                <strong>
+                    Compartilhe histórias
+                </strong>
+
+                <p>
+                    Um livro parado na sua estante
+                    pode ser a próxima leitura
+                    de outra pessoa.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section
+    id="como-funciona"
+    class="secao"
+>
+
+    <div class="container">
+
+        <div class="titulo-secao">
+
+            <span class="etiqueta">
+                Como funciona
+            </span>
+
+            <h2>
+                Uma nova história para cada livro
+            </h2>
+
+            <p>
+                A Estante Circular conecta leitores
+                interessados em compartilhar livros
+                físicos dentro da comunidade.
+            </p>
+
+        </div>
+
+
+        <div class="passos">
+
+            <article class="card-passo">
+                <span class="numero-passo">1</span>
+
+                <h3>
+                    Disponibilize
+                </h3>
+
+                <p>
+                    Informe quais livros estão
+                    disponíveis na sua estante.
+                </p>
+            </article>
+
+
+            <article class="card-passo">
+                <span class="numero-passo">2</span>
+
+                <h3>
+                    Encontre
+                </h3>
+
+                <p>
+                    Consulte livros disponibilizados
+                    por outros membros.
+                </p>
+            </article>
+
+
+            <article class="card-passo">
+                <span class="numero-passo">3</span>
+
+                <h3>
+                    Circule
+                </h3>
+
+                <p>
+                    Combine a retirada e permita
+                    que o livro encontre um novo leitor.
+                </p>
+            </article>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section
+    id="livros"
+    class="secao secao-alternativa"
+>
+
+    <div class="container">
+
+        <div class="titulo-secao">
+
+            <span class="etiqueta">
+                Catálogo
+            </span>
+
+            <h2>
+                Alguns livros disponíveis
+            </h2>
+
+            <p>
+                Nesta etapa os dados são apenas
+                demonstrativos e estão sendo enviados
+                pela view.
+            </p>
+
+        </div>
+
+
+        <div class="grade-livros">
+
+            {% for livro in livros_destaque %}
+
+                <article class="card-livro">
+
+                    <div class="capa-livro">
+                        📖
+                    </div>
+
+                    <div class="card-livro-conteudo">
+
+                        <span class="genero">
+                            {{ livro.genero }}
+                        </span>
+
+                        <h3>
+                            {{ livro.titulo }}
+                        </h3>
+
+                        <p>
+                            {{ livro.autor }}
+                        </p>
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="cta">
+
+    <div class="container cta-conteudo">
+
+        <div>
+
+            <span class="etiqueta etiqueta-clara">
+                Faça parte
+            </span>
+
+            <h2>
+                Sua próxima leitura pode estar
+                mais perto do que você imagina.
+            </h2>
+
+        </div>
+
+        <a
+            href="{% url 'core:login' %}"
+            class="botao botao-claro"
+        >
+            Entrar na Estante
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}

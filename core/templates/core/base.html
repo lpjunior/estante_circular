@@ -1,0 +1,87 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+            Estante Circular
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'core/css/style.css' %}"
+    >
+</head>
+
+<body>
+
+    <header class="cabecalho">
+        <div class="container cabecalho-conteudo">
+
+            <a
+                href="{% url 'core:index' %}"
+                class="logo"
+            >
+                Estante Circular
+            </a>
+
+            <nav aria-label="Navegação principal">
+                <ul class="menu">
+                    <li>
+                        <a href="{% url 'core:index' %}">
+                            Início
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'core:catalogo' %}">
+                            Catálogo
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'core:disponibilizar_livro' %}">
+                            Disponibilizar Livro
+                        </a>
+                    </li>
+
+                    <li>
+                        <a
+                            href="{% url 'core:login' %}"
+                            class="botao-menu"
+                        >
+                            Entrar
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="rodape">
+        <div class="container">
+            <p>
+                Estante Circular | Projeto educacional
+            </p>
+        </div>
+    </footer>
+
+</body>
+
+</html>
