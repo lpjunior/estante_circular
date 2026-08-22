@@ -1,7 +1,8 @@
 import os
 
+from django.contrib.auth.models import User
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from core.models import Livro
 
@@ -121,3 +122,33 @@ def detalhes_livro(request: HttpRequest, id: int) -> HttpResponse:
         'core/detalhes_livro.html',
         contexto,
     )
+
+def cadastro_view(request: HttpRequest) -> HttpResponse:
+    contexto = {}
+
+    if request.method == 'POST':
+        nome = request.POST.get('nome', '').strip()
+        sobrenome = request.POST.get('sobrenome', '').strip()
+        email = request.POST.get('email', '').strip()
+        senha = request.POST.get('senha', '').strip()
+        confirmar_senha = request.POST.get('confirmar_senha', '').strip()
+
+        if senha != confirmar_senha:
+            contexto['erro'] = ('As senhas informadas não coincidem.')
+            return render(request, 'core/cadastro.html', contexto)
+
+
+        if User.objects.filter(username=email).exists():
+            contexto['erro'] = ('Já existe uma conta cadastrada com este e-mail.')
+            return render(request, 'core/cadastro.html', contexto)
+
+        User.objects.create_user(
+            username=email,
+            password=senha,
+            first_name=nome,
+            last_name=sobrenome
+        )
+
+        return redirect('core:login')
+    
+    return render(request, 'core/cadastro.html', contexto)

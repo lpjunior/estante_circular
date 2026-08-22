@@ -1,157 +1,74 @@
 {% extends 'core/base.html' %}
 
-
 {% block title %}
-    Entrar | Estante Circular
+  Entrar | Estante Circular
 {% endblock %}
 
-
 {% block content %}
-
-<section class="pagina-login">
-
+  <section class="pagina-login">
     <div class="container login-container">
+      <div class="login-apresentacao">
+        <span class="etiqueta">Área do leitor</span>
 
-        <div class="login-apresentacao">
+        <h1>Entre na Estante Circular</h1>
 
-            <span class="etiqueta">
-                Área do leitor
-            </span>
+        <p>Acesse sua conta para participar da comunidade e acompanhar os livros disponíveis.</p>
 
-            <h1>
-                Entre na Estante Circular
-            </h1>
+        <div class="aviso-login">
+          <strong>Ambiente de aprendizagem</strong>
+
+          <p>Nesta etapa o login é simulado. As credenciais são configuradas por variáveis de ambiente.</p>
+        </div>
+      </div>
+
+      <div class="card-login">
+        {% if login_realizado %}
+          <div class="mensagem-sucesso">
+            <h2>Login realizado</h2>
+
+            <p>Bem-vindo à Estante Circular.</p>
 
             <p>
-                Acesse sua conta para participar
-                da comunidade e acompanhar os livros
-                disponíveis.
+              Usuário:
+              <strong>{{ email_usuario }}</strong>
             </p>
 
-            <div class="aviso-login">
+            <a href="{% url 'core:index' %}" class="botao botao-principal">Ir para o início</a>
+          </div>
+        {% else %}
+          <h2>Entrar</h2>
 
-                <strong>
-                    Ambiente de aprendizagem
-                </strong>
+          <p class="texto-apoio">Informe suas credenciais.</p>
 
-                <p>
-                    Nesta etapa o login é simulado.
-                    As credenciais são configuradas
-                    por variáveis de ambiente.
-                </p>
+          {% if erro %}
+            <div class="mensagem-erro" role="alert">{{ erro }}</div>
+          {% endif %}
 
+          <form method="post">
+            {% csrf_token %}
+
+            <div class="campo">
+              <label for="email">E-mail</label>
+
+              <input type="email" id="email" name="email" placeholder="seu@email.com" required />
             </div>
 
-        </div>
+            <div class="campo">
+              <label for="senha">Senha</label>
 
+              <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required />
+            </div>
 
-        <div class="card-login">
+            <button type="submit" class="botao botao-principal botao-login">Entrar</button>
+          </form>
 
-            {% if login_realizado %}
+          <div class="login-cadastro">
+            <p>Ainda não possui uma conta?</p>
 
-                <div class="mensagem-sucesso">
-
-                    <h2>
-                        Login realizado
-                    </h2>
-
-                    <p>
-                        Bem-vindo à Estante Circular.
-                    </p>
-
-                    <p>
-                        Usuário:
-                        <strong>
-                            {{ email_usuario }}
-                        </strong>
-                    </p>
-
-                    <a
-                        href="{% url 'core:index' %}"
-                        class="botao botao-principal"
-                    >
-                        Ir para o início
-                    </a>
-
-                </div>
-
-            {% else %}
-
-                <h2>
-                    Entrar
-                </h2>
-
-                <p class="texto-apoio">
-                    Informe suas credenciais.
-                </p>
-
-
-                {% if erro %}
-
-                    <div
-                        class="mensagem-erro"
-                        role="alert"
-                    >
-                        {{ erro }}
-                    </div>
-
-                {% endif %}
-
-
-                <form method="post">
-
-                    {% csrf_token %}
-
-
-                    <div class="campo">
-
-                        <label for="email">
-                            E-mail
-                        </label>
-
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            placeholder="seu@email.com"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="campo">
-
-                        <label for="senha">
-                            Senha
-                        </label>
-
-                        <input
-                            type="password"
-                            id="senha"
-                            name="senha"
-                            placeholder="Digite sua senha"
-                            required
-                        >
-
-                    </div>
-
-
-                    <button
-                        type="submit"
-                        class="botao botao-principal botao-login"
-                    >
-                        Entrar
-                    </button>
-
-                </form>
-
-            {% endif %}
-
-        </div>
-
+            <a href="{% url 'core:cadastro' %}" class="botao botao-secundario">Criar minha conta</a>
+          </div>
+        {% endif %}
+      </div>
     </div>
-
-</section>
-
+  </section>
 {% endblock %}
