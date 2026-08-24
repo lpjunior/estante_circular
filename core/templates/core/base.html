@@ -2,86 +2,72 @@
 
 <!DOCTYPE html>
 <html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
 
-<head>
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>
-        {% block title %}
-            Estante Circular
-        {% endblock %}
+      {% block title %}
+        Estante Circular
+      {% endblock %}
     </title>
 
-    <link
-        rel="stylesheet"
-        href="{% static 'core/css/style.css' %}"
-    >
-</head>
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}" />
+  </head>
 
-<body>
-
+  <body>
     <header class="cabecalho">
-        <div class="container cabecalho-conteudo">
+      <div class="container cabecalho-conteudo">
+        <a href="{% url 'core:index' %}" class="logo">Estante Circular</a>
 
-            <a
-                href="{% url 'core:index' %}"
-                class="logo"
-            >
-                Estante Circular
-            </a>
+        <nav aria-label="Navegação principal">
+          <ul class="menu">
+            <li>
+              <a href="{% url 'core:index' %}">Início</a>
+            </li>
 
-            <nav aria-label="Navegação principal">
-                <ul class="menu">
-                    <li>
-                        <a href="{% url 'core:index' %}">
-                            Início
-                        </a>
-                    </li>
+            <li>
+              <a href="{% url 'core:catalogo' %}">Catálogo</a>
+            </li>
 
-                    <li>
-                        <a href="{% url 'core:catalogo' %}">
-                            Catálogo
-                        </a>
-                    </li>
+            <li>
+              <a href="{% url 'core:disponibilizar_livro' %}">Disponibilizar Livro</a>
+            </li>
 
-                    <li>
-                        <a href="{% url 'core:disponibilizar_livro' %}">
-                            Disponibilizar Livro
-                        </a>
-                    </li>
-
-                    <li>
-                        <a
-                            href="{% url 'core:login' %}"
-                            class="botao-menu"
-                        >
-                            Entrar
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-
-        </div>
+            {% if not request.user.is_authenticated %}
+              <li>
+                <a href="{% url 'core:login' %}" class="botao-menu">Entrar</a>
+              </li>
+            {% else %}
+              <li>
+                <span>
+                  {% if user.first_name %}
+                    Olá, {{ user.first_name }}
+                  {% else %}
+                    Olá, {{ user.username }}
+                  {% endif %}
+                </span>
+              </li>
+              <li>
+                <a href="{% url 'core:logout' %}" class="botao-menu">Sair</a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
     </header>
 
     <main>
-        {% block content %}
-        {% endblock %}
+      {% block content %}
+
+      {% endblock %}
     </main>
 
     <footer class="rodape">
-        <div class="container">
-            <p>
-                Estante Circular | Projeto educacional
-            </p>
-        </div>
+      <div class="container">
+        <p>Estante Circular | Projeto educacional</p>
+      </div>
     </footer>
-
-</body>
-
+  </body>
 </html>

@@ -1,142 +1,62 @@
 {% extends 'core/base.html' %}
 
-
 {% block title %}
-    Catálogo | Estante Circular
+  Catálogo | Estante Circular
 {% endblock %}
 
-
 {% block content %}
-
-<section class="pagina-catalogo">
-
+  <section class="pagina-catalogo">
     <div class="container">
+      <div class="catalogo-cabecalho">
+        <span class="etiqueta">Catálogo</span>
 
-        <div class="catalogo-cabecalho">
+        <h1>Encontre sua próxima leitura</h1>
 
-            <span class="etiqueta">
-                Catálogo
-            </span>
+        <p>Pesquise pelos livros disponíveis na Estante Circular.</p>
+      </div>
 
-            <h1>
-                Encontre sua próxima leitura
-            </h1>
+      <form method="get" class="formulario-busca">
+        <label for="busca" class="sr-only">Pesquisar livro</label>
 
-            <p>
-                Pesquise pelos livros disponíveis
-                na Estante Circular.
-            </p>
+        <input type="text" id="busca" name="busca" value="{{ termo_busca }}" placeholder="Digite o nome do livro" />
 
+        <button type="submit" class="botao botao-principal">Pesquisar</button>
+      </form>
+
+      {% if pesquisa_realizada %}
+        <div class="resultado-pesquisa">
+          <p>
+            Resultado da pesquisa por:
+            <strong>{{ termo_busca }}</strong>
+          </p>
         </div>
+      {% endif %}
 
+      {% if livros %}
+        <div class="grade-livros">
+          {% for livro in livros %}
+            <article class="card-livro">
+              <div class="capa-livro">📖</div>
 
-        <form
-            method="get"
-            class="formulario-busca"
-        >
+              <div class="card-livro-conteudo">
+                <span class="genero">{{ livro.genero }}</span>
 
-            <label
-                for="busca"
-                class="sr-only"
-            >
-                Pesquisar livro
-            </label>
+                <h2>{{ livro.titulo }}</h2>
 
+                <p>{{ livro.autor }}</p>
 
-            <input
-                type="text"
-                id="busca"
-                name="busca"
-                value="{{ termo_busca }}"
-                placeholder="Digite o nome do livro"
-            >
+                <a href="{% url 'core:detalhes_livro' livro.id %}" class="botao botao-secundario">Ver detalhes</a>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="nenhum-resultado">
+          <h2>Nenhum livro encontrado</h2>
 
-
-            <button
-                type="submit"
-                class="botao botao-principal"
-            >
-                Pesquisar
-            </button>
-
-        </form>
-
-
-        {% if pesquisa_realizada %}
-
-            <div class="resultado-pesquisa">
-
-                <p>
-                    Resultado da pesquisa por:
-                    <strong>
-                        {{ termo_busca }}
-                    </strong>
-                </p>
-
-            </div>
-
-        {% endif %}
-
-
-        {% if livros %}
-
-            <div class="grade-livros">
-
-                {% for livro in livros %}
-
-                    <article class="card-livro">
-
-                        <div class="capa-livro">
-                            📖
-                        </div>
-
-                        <div class="card-livro-conteudo">
-
-                            <span class="genero">
-                                {{ livro.genero }}
-                            </span>
-
-                            <h2>
-                                {{ livro.titulo }}
-                            </h2>
-
-                            <p>
-                                {{ livro.autor }}
-                            </p>
-
-                            <a href={% url 'core:detalhes_livro' livro.id %}
-                               class="botao botao-secundario"
-                            >
-                                Ver detalhes
-                            </a>
-
-                        </div>
-
-                    </article>
-
-                {% endfor %}
-
-            </div>
-
-        {% else %}
-
-            <div class="nenhum-resultado">
-
-                <h2>
-                    Nenhum livro encontrado
-                </h2>
-
-                <p>
-                    Não encontramos livros com o termo
-                    informado.
-                </p>
-
-            </div>
-
-        {% endif %}
-
+          <p>Não encontramos livros com o termo informado.</p>
+        </div>
+      {% endif %}
     </div>
-
-</section>
-
+  </section>
 {% endblock %}

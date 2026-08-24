@@ -1,8 +1,8 @@
-import os
-
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from core.models import Livro
 
@@ -22,22 +22,35 @@ def index (request: HttpRequest) -> HttpResponse:
 def login_view(request: HttpRequest) -> HttpResponse:
     contexto = {}
 
+    next_url = request.GET.get('next', '')
+
     if request.method == 'POST':
         email = request.POST.get('email', '').strip()
         senha = request.POST.get('senha', '')
 
-        email_mock = os.getenv('MOCK_LOGIN_EMAIL')
-        senha_mock = os.getenv('MOCK_LOGIN_PASSWORD')
+        usuario = authenticate(
+            request=request,
+            username=email,
+            password=senha
+        )
 
-        if email == email_mock and senha == senha_mock:
-            contexto['login_realizado'] = True
-            contexto['email_usuario'] = email
+        if usuario is not None:
+            login(request=request, user=usuario)
+
+            if next_url:
+                return redirect(next_url)
+
+            return redirect('core:index')
         else:
             contexto['erro'] = 'E-mail ou senha inválidos.'
 
     return render(request, 'core/login.html', contexto)
 
+def logout_view(request: HttpRequest) -> HttpResponse:
+    logout(request=request)
+    return redirect('core:index')
 
+@login_required(login_url='core:login')
 def disponibilizar_livro(request: HttpRequest) -> HttpResponse:
     contexto = {}
 
@@ -123,6 +136,35 @@ def detalhes_livro(request: HttpRequest, id: int) -> HttpResponse:
         contexto,
     )
 
+@login_required(login_url='core:login')
+def editar_livro(request: HttpRequest, id: int) -> HttpResponse:
+    livro = get_object_or_404(Livro, id=id)
+
+    if request.method == 'POST':
+        livro.titulo = request.POST.get('titulo', '').strip()
+        livro.autor = request.POST.get('autor', '').strip()
+        livro.genero = request.POST.get('genero', '').strip()
+        livro.estado_conservacao = request.POST.get('estado_conservacao', '').strip()
+        livro.responsavel = request.POST.get('responsavel', '').strip()
+        livro.descricao = request.POST.get('descricao', '').strip()
+
+        livro.save()
+
+        return redirect(
+            'core:detalhes_livro',
+            id=livro.id,
+        )
+
+    contexto = {
+        'livro': livro,
+    }
+
+    return render(
+        request,
+        'core/editar_livro.html',
+        contexto
+    )
+
 def cadastro_view(request: HttpRequest) -> HttpResponse:
     contexto = {}
 
@@ -144,6 +186,7 @@ def cadastro_view(request: HttpRequest) -> HttpResponse:
 
         User.objects.create_user(
             username=email,
+            email=email,
             password=senha,
             first_name=nome,
             last_name=sobrenome

@@ -27,9 +27,19 @@ urlpatterns = [
         name='detalhes_livro'
     ),
     path(
+        'livros/<int:id>/editar/',
+        views.editar_livro,
+        name='editar_livro'
+    ),
+    path(
         'login/',
         views.login_view,
         name='login',
+    ),
+    path(
+        'logout/',
+        views.logout_view,
+        name='logout',
     ),
     path(
         'cadastro/',
