@@ -14,12 +14,12 @@ DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 
-print("=== ENV DEBUG ===")
+print("--- ENV DEBUG ---")
 print("VERCEL:", repr(os.getenv("VERCEL")))
 print("VERCEL_ENV:", repr(os.getenv("VERCEL_ENV")))
 print("ALLOWED_HOSTS existe:", "ALLOWED_HOSTS" in os.environ)
 print("ALLOWED_HOSTS:", repr(os.getenv("ALLOWED_HOSTS")))
-print("=================")
+print("------------------------")
 
 # Application definition
 
