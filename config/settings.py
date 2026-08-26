@@ -9,6 +9,10 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+ENVIRONMENT = os.getenv(
+    "DJANGO_ENV",
+    "development",
+)
 
 # ============================================================
 # AMBIENTE
@@ -29,10 +33,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Mesmo que um .env aparecesse acidentalmente no ambiente,
 # ele não substituiria valores já definidos pelo Vercel.
 
-load_dotenv(
-    dotenv_path=BASE_DIR / ".env",
-    override=False,
-)
+if ENVIRONMENT == "development":
+    load_dotenv(
+        BASE_DIR / ".env",
+        override=False,
+    )
 
 
 # ============================================================
