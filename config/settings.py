@@ -188,6 +188,7 @@ DATABASES = {
             "POSTGRES_PORT",
             default="5432",
         ),
+        "CONN_MAX_AGE": 0,
         "OPTIONS": {
             "sslmode": get_env(
                 "POSTGRES_SSLMODE",
