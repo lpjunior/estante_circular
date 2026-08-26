@@ -1,352 +1,155 @@
 {% extends 'core/base.html' %}
 
-
 {% block title %}
-    Disponibilizar Livro | Estante Circular
+  Disponibilizar Livro | Estante Circular
 {% endblock %}
 
-
 {% block content %}
-
-<section class="pagina-disponibilizar">
-
+  <section class="pagina-disponibilizar">
     <div class="container disponibilizar-container">
+      <div class="disponibilizar-apresentacao">
+        <span class="etiqueta">Compartilhe uma leitura</span>
 
-        <div class="disponibilizar-apresentacao">
+        <h1>Disponibilizar um livro</h1>
 
-            <span class="etiqueta">
-                Compartilhe uma leitura
-            </span>
+        <p>Tem um livro parado na sua estante? Disponibilize-o para que outra pessoa possa continuar essa história.</p>
 
-            <h1>
-                Disponibilizar um livro
-            </h1>
+        <div class="informacao-destaque">
+          <strong>Nesta etapa do projeto</strong>
 
-            <p>
-                Tem um livro parado na sua estante?
-                Disponibilize-o para que outra pessoa
-                possa continuar essa história.
-            </p>
+          <p>Os dados enviados ainda não serão armazenados em banco de dados. Estamos praticando o envio e o processamento de informações utilizando POST.</p>
+        </div>
+      </div>
 
-            <div class="informacao-destaque">
+      <div class="card-disponibilizar">
+        {% if livro_enviado %}
+          <div class="confirmacao-livro">
+            <span class="icone-sucesso">✓</span>
 
-                <strong>
-                    Nesta etapa do projeto
-                </strong>
+            <h2>Livro recebido com sucesso!</h2>
 
-                <p>
-                    Os dados enviados ainda não serão
-                    armazenados em banco de dados.
-                    Estamos praticando o envio e o
-                    processamento de informações
-                    utilizando POST.
-                </p>
+            <p>Confira as informações enviadas:</p>
 
+            <div class="resumo-livro">
+              <div class="resumo-item">
+                <span>Título</span>
+
+                <strong>{{ livro.titulo }}</strong>
+              </div>
+
+              <div class="resumo-item">
+                <span>Autor</span>
+
+                <strong>{{ livro.autor }}</strong>
+              </div>
+
+              <div class="resumo-item">
+                <span>Gênero</span>
+
+                <strong>{{ livro.genero }}</strong>
+              </div>
+
+              <div class="resumo-item">
+                <span>Estado de conservação</span>
+
+                <strong>{{ livro.estado_conservacao }}</strong>
+              </div>
+
+              <div class="resumo-item">
+                <span>Disponibilizado por</span>
+
+                <strong>{{ livro.responsavel.first_name }}</strong>
+              </div>
+
+              <div class="resumo-item">
+                <span>Descrição</span>
+
+                <strong>{{ livro.descricao }}</strong>
+              </div>
             </div>
 
-        </div>
+            <a href="{% url 'core:disponibilizar_livro' %}" class="botao botao-principal">Disponibilizar outro livro</a>
+          </div>
+        {% else %}
+          <div class="cabecalho-formulario">
+            <h2>Dados do livro</h2>
 
+            <p>Preencha as informações abaixo.</p>
+          </div>
 
-        <div class="card-disponibilizar">
+          <form method="post">
+            {% csrf_token %}
 
-            {% if livro_enviado %}
+            <div class="campo">
+              <label for="titulo">Título do livro</label>
 
-                <div class="confirmacao-livro">
+              <input type="text" id="titulo" name="titulo" placeholder="Ex.: O Hobbit" required />
+            </div>
 
-                    <span class="icone-sucesso">
-                        ✓
-                    </span>
+            <div class="campo">
+              <label for="autor">Autor</label>
 
-                    <h2>
-                        Livro recebido com sucesso!
-                    </h2>
+              <input type="text" id="autor" name="autor" placeholder="Ex.: J. R. R. Tolkien" required />
+            </div>
 
-                    <p>
-                        Confira as informações enviadas:
-                    </p>
+            <div class="campo">
+              <label for="genero">Gênero ou categoria</label>
 
+              <select id="genero" name="genero" required>
+                <option value="">Selecione</option>
 
-                    <div class="resumo-livro">
+                <option value="Fantasia">Fantasia</option>
 
-                        <div class="resumo-item">
+                <option value="Ficção">Ficção</option>
 
-                            <span>
-                                Título
-                            </span>
+                <option value="Romance">Romance</option>
 
-                            <strong>
-                                {{ livro.titulo }}
-                            </strong>
+                <option value="Terror">Terror</option>
 
-                        </div>
+                <option value="Suspense">Suspense</option>
 
+                <option value="Aventura">Aventura</option>
 
-                        <div class="resumo-item">
+                <option value="Biografia">Biografia</option>
 
-                            <span>
-                                Autor
-                            </span>
+                <option value="Literatura Brasileira">Literatura Brasileira</option>
 
-                            <strong>
-                                {{ livro.autor }}
-                            </strong>
+                <option value="Outros">Outros</option>
+              </select>
+            </div>
 
-                        </div>
+            <div class="campo">
+              <label for="estado_conservacao">Estado de conservação</label>
 
-                        <div class="resumo-item">
+              <select id="estado_conservacao" name="estado_conservacao" required>
+                <option value="">Selecione</option>
 
-                            <span>
-                                Gênero
-                            </span>
+                <option value="Novo">Novo</option>
 
-                            <strong>
-                                {{ livro.genero }}
-                            </strong>
+                <option value="Muito bom">Muito bom</option>
 
-                        </div>
+                <option value="Bom">Bom</option>
 
+                <option value="Regular">Regular</option>
+              </select>
+            </div>
 
-                        <div class="resumo-item">
+            <div class="campo">
+              <label for="descricao">Descrição</label>
 
-                            <span>
-                                Estado de conservação
-                            </span>
+              <textarea id="descricao" name="descricao" placeholder="Descrição do livro" required></textarea>
+            </div>
 
-                            <strong>
-                                {{ livro.estado_conservacao }}
-                            </strong>
+            <div class="campo">
+              <label for="responsavel">Seu nome</label>
 
-                        </div>
+              <input type="text" id="responsavel" name="responsavel" placeholder="Nome da pessoa responsável" value="{{ user.first_name }}" disabled />
+            </div>
 
-                        <div class="resumo-item">
-
-                            <span>
-                                Disponibilizado por
-                            </span>
-
-                            <strong>
-                                {{ livro.responsavel }}
-                            </strong>
-
-                        </div>
-
-                        <div class="resumo-item">
-
-                            <span>
-                                Descrição
-                            </span>
-
-                            <strong>
-                                {{ livro.descricao }}
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-
-                    <a
-                        href="{% url 'core:disponibilizar_livro' %}"
-                        class="botao botao-principal"
-                    >
-                        Disponibilizar outro livro
-                    </a>
-
-                </div>
-
-            {% else %}
-
-                <div class="cabecalho-formulario">
-
-                    <h2>
-                        Dados do livro
-                    </h2>
-
-                    <p>
-                        Preencha as informações abaixo.
-                    </p>
-
-                </div>
-
-
-                <form method="post">
-
-                    {% csrf_token %}
-
-
-                    <div class="campo">
-
-                        <label for="titulo">
-                            Título do livro
-                        </label>
-
-                        <input
-                            type="text"
-                            id="titulo"
-                            name="titulo"
-                            placeholder="Ex.: O Hobbit"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="campo">
-
-                        <label for="autor">
-                            Autor
-                        </label>
-
-                        <input
-                            type="text"
-                            id="autor"
-                            name="autor"
-                            placeholder="Ex.: J. R. R. Tolkien"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="campo">
-
-                        <label for="genero">
-                            Gênero ou categoria
-                        </label>
-
-                        <select
-                            id="genero"
-                            name="genero"
-                            required
-                        >
-
-                            <option value="">
-                                Selecione
-                            </option>
-
-                            <option value="Fantasia">
-                                Fantasia
-                            </option>
-
-                            <option value="Ficção">
-                                Ficção
-                            </option>
-
-                            <option value="Romance">
-                                Romance
-                            </option>
-
-                            <option value="Terror">
-                                Terror
-                            </option>
-
-                            <option value="Suspense">
-                                Suspense
-                            </option>
-
-                            <option value="Aventura">
-                                Aventura
-                            </option>
-
-                            <option value="Biografia">
-                                Biografia
-                            </option>
-
-                            <option value="Literatura Brasileira">
-                                Literatura Brasileira
-                            </option>
-
-                            <option value="Outros">
-                                Outros
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="campo">
-
-                        <label for="estado_conservacao">
-                            Estado de conservação
-                        </label>
-
-                        <select
-                            id="estado_conservacao"
-                            name="estado_conservacao"
-                            required
-                        >
-
-                            <option value="">
-                                Selecione
-                            </option>
-
-                            <option value="Novo">
-                                Novo
-                            </option>
-
-                            <option value="Muito bom">
-                                Muito bom
-                            </option>
-
-                            <option value="Bom">
-                                Bom
-                            </option>
-
-                            <option value="Regular">
-                                Regular
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                    <div class="campo">
-
-                        <label for="descricao">
-                            Descrição
-                        </label>
-
-                        <textarea
-                            id="descricao"
-                            name="descricao"
-                            placeholder="Descrição do livro"
-                            required
-                        ></textarea>
-
-                    </div>
-                    
-                    <div class="campo">
-
-                        <label for="responsavel">
-                            Seu nome
-                        </label>
-
-                        <input
-                            type="text"
-                            id="responsavel"
-                            name="responsavel"
-                            placeholder="Nome da pessoa responsável"
-                            required
-                        >
-
-                    </div>
-
-                    <button
-                        type="submit"
-                        class="botao botao-principal botao-formulario"
-                    >
-                        Disponibilizar livro
-                    </button>
-
-                </form>
-
-            {% endif %}
-
-        </div>
-
+            <button type="submit" class="botao botao-principal botao-formulario">Disponibilizar livro</button>
+          </form>
+        {% endif %}
+      </div>
     </div>
-
-</section>
-
+  </section>
 {% endblock %}

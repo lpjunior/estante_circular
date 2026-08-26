@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -50,7 +51,7 @@ def logout_view(request: HttpRequest) -> HttpResponse:
     logout(request=request)
     return redirect('core:index')
 
-@login_required(login_url='core:login')
+@login_required
 def disponibilizar_livro(request: HttpRequest) -> HttpResponse:
     contexto = {}
 
@@ -59,7 +60,6 @@ def disponibilizar_livro(request: HttpRequest) -> HttpResponse:
         autor = request.POST.get('autor', '').strip()
         genero = request.POST.get('genero', '').strip()
         estado_conservacao = request.POST.get('estado_conservacao', '').strip()
-        responsavel = request.POST.get('responsavel', '').strip()
         descricao = request.POST.get('descricao', '').strip()
 
         livro = Livro.objects.create(
@@ -67,7 +67,7 @@ def disponibilizar_livro(request: HttpRequest) -> HttpResponse:
             autor=autor,
             genero=genero,
             estado_conservacao=estado_conservacao,
-            responsavel=responsavel,
+            responsavel=request.user,
             descricao=descricao,
         )
 
@@ -136,16 +136,18 @@ def detalhes_livro(request: HttpRequest, id: int) -> HttpResponse:
         contexto,
     )
 
-@login_required(login_url='core:login')
+@login_required
 def editar_livro(request: HttpRequest, id: int) -> HttpResponse:
-    livro = get_object_or_404(Livro, id=id)
+    livro = get_object_or_404(Livro.objects.select_related("responsavel"), id=id)
 
+    if livro.responsavel != request.user:
+        raise PermissionDenied("Você não tem permissão para editar este livro.")
+    
     if request.method == 'POST':
         livro.titulo = request.POST.get('titulo', '').strip()
         livro.autor = request.POST.get('autor', '').strip()
         livro.genero = request.POST.get('genero', '').strip()
         livro.estado_conservacao = request.POST.get('estado_conservacao', '').strip()
-        livro.responsavel = request.POST.get('responsavel', '').strip()
         livro.descricao = request.POST.get('descricao', '').strip()
 
         livro.save()
