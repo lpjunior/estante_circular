@@ -17,6 +17,7 @@ class Livro(models.Model):
     
     descricao = models.TextField()
 
+    ativo = models.BooleanField(default=True)
 
     def __str__(self) -> str:
         return self.titulo

@@ -32,6 +32,11 @@ urlpatterns = [
         name='editar_livro'
     ),
     path(
+        'livros/<int:id>/excluir/',
+        views.excluir_livro,
+        name='excluir_livro'
+    ),
+    path(
         'login/',
         views.login_view,
         name='login',

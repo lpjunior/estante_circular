@@ -1,0 +1,25 @@
+{% extends 'core/base.html' %}
+
+{% block title %}
+  {{ codigo_erro }} | Estante Circular
+{% endblock %}
+
+{% block content %}
+  <section class="pagina-erro">
+    <div class="container">
+      <div class="card-erro">
+        <span class="codigo-erro">{{ codigo_erro }}</span>
+
+        <h1>{{ titulo_erro }}</h1>
+
+        <p>{{ mensagem_erro }}</p>
+
+        <div class="acoes-erro">
+          <a href="{% url 'core:index' %}" class="botao botao-principal">Ir para o início</a>
+
+          <a href="{% url 'core:catalogo' %}" class="botao botao-secundario">Ver catálogo</a>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

@@ -8,32 +8,60 @@ from django.shortcuts import get_object_or_404, redirect, render
 from core.models import Livro
 
 
-def index (request: HttpRequest) -> HttpResponse:
+def index(request: HttpRequest) -> HttpResponse:
 
-    livros_destaque = Livro.objects.order_by('-id')[:3]
+    livros_destaque = Livro.objects.filter(ativo=True).order_by("-id")[:3]
 
     contexto = {
-        'titulo_pagina': 'Estante Circular',
-        'descricao': 'Uma comunidade para compartilhar livros e fazer histórias continuarem circulando.',
-        'livros_destaque': livros_destaque,
+        "titulo_pagina": "Estante Circular",
+        "descricao": "Uma comunidade para compartilhar livros e fazer histórias continuarem circulando.",
+        "livros_destaque": livros_destaque,
     }
 
-    return render(request, 'core/index.html', contexto)
+    return render(request, "core/index.html", contexto)
+
+
+def cadastro_view(request: HttpRequest) -> HttpResponse:
+    contexto = {}
+
+    if request.method == "POST":
+        nome = request.POST.get("nome", "").strip()
+        sobrenome = request.POST.get("sobrenome", "").strip()
+        email = request.POST.get("email", "").strip()
+        senha = request.POST.get("senha", "").strip()
+        confirmar_senha = request.POST.get("confirmar_senha", "").strip()
+
+        if senha != confirmar_senha:
+            contexto["erro"] = "As senhas informadas não coincidem."
+            return render(request, "core/cadastro.html", contexto)
+
+        if User.objects.filter(username=email).exists():
+            contexto["erro"] = "Já existe uma conta cadastrada com este e-mail."
+            return render(request, "core/cadastro.html", contexto)
+
+        User.objects.create_user(
+            username=email,
+            email=email,
+            password=senha,
+            first_name=nome,
+            last_name=sobrenome,
+        )
+
+        return redirect("core:login")
+
+    return render(request, "core/cadastro.html", contexto)
+
 
 def login_view(request: HttpRequest) -> HttpResponse:
     contexto = {}
 
-    next_url = request.GET.get('next', '')
+    next_url = request.GET.get("next", "")
 
-    if request.method == 'POST':
-        email = request.POST.get('email', '').strip()
-        senha = request.POST.get('senha', '')
+    if request.method == "POST":
+        email = request.POST.get("email", "").strip()
+        senha = request.POST.get("senha", "")
 
-        usuario = authenticate(
-            request=request,
-            username=email,
-            password=senha
-        )
+        usuario = authenticate(request=request, username=email, password=senha)
 
         if usuario is not None:
             login(request=request, user=usuario)
@@ -41,26 +69,28 @@ def login_view(request: HttpRequest) -> HttpResponse:
             if next_url:
                 return redirect(next_url)
 
-            return redirect('core:index')
+            return redirect("core:index")
         else:
-            contexto['erro'] = 'E-mail ou senha inválidos.'
+            contexto["erro"] = "E-mail ou senha inválidos."
 
-    return render(request, 'core/login.html', contexto)
+    return render(request, "core/login.html", contexto)
+
 
 def logout_view(request: HttpRequest) -> HttpResponse:
     logout(request=request)
-    return redirect('core:index')
+    return redirect("core:index")
+
 
 @login_required
 def disponibilizar_livro(request: HttpRequest) -> HttpResponse:
     contexto = {}
 
-    if request.method == 'POST':
-        titulo = request.POST.get('titulo', '').strip()
-        autor = request.POST.get('autor', '').strip()
-        genero = request.POST.get('genero', '').strip()
-        estado_conservacao = request.POST.get('estado_conservacao', '').strip()
-        descricao = request.POST.get('descricao', '').strip()
+    if request.method == "POST":
+        titulo = request.POST.get("titulo", "").strip()
+        autor = request.POST.get("autor", "").strip()
+        genero = request.POST.get("genero", "").strip()
+        estado_conservacao = request.POST.get("estado_conservacao", "").strip()
+        descricao = request.POST.get("descricao", "").strip()
 
         livro = Livro.objects.create(
             titulo=titulo,
@@ -72,27 +102,29 @@ def disponibilizar_livro(request: HttpRequest) -> HttpResponse:
         )
 
         contexto = {
-            'livro_enviado': True,
-            'livro': livro,
+            "livro_enviado": True,
+            "livro": livro,
         }
 
     return render(
         request,
-        'core/disponibilizar_livro.html',
+        "core/disponibilizar_livro.html",
         contexto,
     )
 
+
 def catalogo(request: HttpRequest) -> HttpResponse:
     termo_busca = request.GET.get(
-        'busca',
-        '',
+        "busca",
+        "",
     ).strip()
 
-    livros = Livro.objects.all()
+    livros = Livro.objects.filter(ativo=True)
 
     if termo_busca:
         livros = livros.filter(
-            titulo__icontains=termo_busca, # lookup
+            ativo=True,
+            titulo__icontains=termo_busca,  # lookup
         )
 
     """
@@ -100,16 +132,15 @@ def catalogo(request: HttpRequest) -> HttpResponse:
     conter o texto + ignorar diferença entre maiúsculas e minúsculas
     """
 
-
     contexto = {
-        'livros': livros,
-        'termo_busca': termo_busca,
-        'pesquisa_realizada': bool(termo_busca),
+        "livros": livros,
+        "termo_busca": termo_busca,
+        "pesquisa_realizada": bool(termo_busca),
     }
 
     return render(
         request,
-        'core/catalogo.html',
+        "core/catalogo.html",
         contexto,
     )
 
@@ -118,82 +149,163 @@ def detalhes_livro(request: HttpRequest, id: int) -> HttpResponse:
 
     contexto = {}
 
-    livro = Livro.objects.filter(id=id).first()
+    livro = Livro.objects.filter(ativo=True, id=id).first()
 
     if livro is None:
         return HttpResponse(
-            'Livro não encontrado.',
+            "Livro não encontrado.",
             status=404,
         )
 
     contexto = {
-        'livro': livro,
-    }
-
-    return render(
-        request, 
-        'core/detalhes_livro.html',
-        contexto,
-    )
-
-@login_required
-def editar_livro(request: HttpRequest, id: int) -> HttpResponse:
-    livro = get_object_or_404(Livro.objects.select_related("responsavel"), id=id)
-
-    if livro.responsavel != request.user:
-        raise PermissionDenied("Você não tem permissão para editar este livro.")
-    
-    if request.method == 'POST':
-        livro.titulo = request.POST.get('titulo', '').strip()
-        livro.autor = request.POST.get('autor', '').strip()
-        livro.genero = request.POST.get('genero', '').strip()
-        livro.estado_conservacao = request.POST.get('estado_conservacao', '').strip()
-        livro.descricao = request.POST.get('descricao', '').strip()
-
-        livro.save()
-
-        return redirect(
-            'core:detalhes_livro',
-            id=livro.id,
-        )
-
-    contexto = {
-        'livro': livro,
+        "livro": livro,
     }
 
     return render(
         request,
-        'core/editar_livro.html',
-        contexto
+        "core/detalhes_livro.html",
+        contexto,
     )
 
-def cadastro_view(request: HttpRequest) -> HttpResponse:
-    contexto = {}
 
-    if request.method == 'POST':
-        nome = request.POST.get('nome', '').strip()
-        sobrenome = request.POST.get('sobrenome', '').strip()
-        email = request.POST.get('email', '').strip()
-        senha = request.POST.get('senha', '').strip()
-        confirmar_senha = request.POST.get('confirmar_senha', '').strip()
+@login_required
+def editar_livro(request: HttpRequest, id: int) -> HttpResponse:
+    livro = get_object_or_404(Livro.objects.select_related("responsavel"), ativo=True, id=id)
 
-        if senha != confirmar_senha:
-            contexto['erro'] = ('As senhas informadas não coincidem.')
-            return render(request, 'core/cadastro.html', contexto)
+    if livro.responsavel != request.user:
+        raise PermissionDenied("Você não tem permissão para editar este livro.")
 
+    if request.method == "POST":
+        livro.titulo = request.POST.get("titulo", "").strip()
+        livro.autor = request.POST.get("autor", "").strip()
+        livro.genero = request.POST.get("genero", "").strip()
+        livro.estado_conservacao = request.POST.get("estado_conservacao", "").strip()
+        livro.descricao = request.POST.get("descricao", "").strip()
 
-        if User.objects.filter(username=email).exists():
-            contexto['erro'] = ('Já existe uma conta cadastrada com este e-mail.')
-            return render(request, 'core/cadastro.html', contexto)
+        livro.save()
 
-        User.objects.create_user(
-            username=email,
-            email=email,
-            password=senha,
-            first_name=nome,
-            last_name=sobrenome
+        return redirect(
+            "core:detalhes_livro",
+            id=livro.id,
         )
 
-        return redirect('core:login')
-    
-    return render(request, 'core/cadastro.html', contexto)
+    contexto = {
+        "livro": livro,
+    }
+
+    return render(request, "core/editar_livro.html", contexto)
+
+
+@login_required
+def excluir_livro(request: HttpRequest, id: int) -> HttpResponse:
+    livro = get_object_or_404(Livro, id=id, ativo=True)
+
+
+    if livro.responsavel != request.user:
+        raise PermissionDenied('Você não tem permissão para remover este livro.')
+
+    if request.method == 'POST':
+        livro.ativo = False
+        livro.save()
+
+        return redirect('core:catalogo')
+
+    contexto = {
+        'livro': livro
+    }
+
+    return render(
+        request=request,
+        template_name='core/excluir_livro.html',
+        context=contexto
+    )
+
+# =========================================================
+# TRATAMENTO DE ERROS
+# =========================================================
+
+
+def erro_400(
+    request: HttpRequest,
+    exception,
+) -> HttpResponse:
+
+    contexto = {
+        "codigo_erro": "400",
+        "titulo_erro": "Requisição inválida",
+        "mensagem_erro": (
+            "Não foi possível processar a solicitação "
+            "enviada. Verifique os dados e tente novamente."
+        ),
+    }
+
+    return render(
+        request,
+        "core/erro.html",
+        contexto,
+        status=400,
+    )
+
+
+def erro_403(
+    request: HttpRequest,
+    exception,
+) -> HttpResponse:
+
+    contexto = {
+        "codigo_erro": "403",
+        "titulo_erro": "Acesso não permitido",
+        "mensagem_erro": (
+            "Você está autenticado, mas não possui permissão para acessar este recurso."
+        ),
+    }
+
+    return render(
+        request,
+        "core/erro.html",
+        contexto,
+        status=403,
+    )
+
+
+def erro_404(
+    request: HttpRequest,
+    exception,
+) -> HttpResponse:
+
+    contexto = {
+        "codigo_erro": "404",
+        "titulo_erro": "Página não encontrada",
+        "mensagem_erro": (
+            "O conteúdo que você tentou acessar "
+            "não foi encontrado ou não está mais disponível."
+        ),
+    }
+
+    return render(
+        request,
+        "core/erro.html",
+        contexto,
+        status=404,
+    )
+
+
+def erro_500(
+    request: HttpRequest,
+) -> HttpResponse:
+
+    contexto = {
+        "codigo_erro": "500",
+        "titulo_erro": "Ocorreu um erro inesperado",
+        "mensagem_erro": (
+            "Não foi possível concluir a operação neste momento. "
+            "Tente novamente em alguns instantes."
+        ),
+    }
+
+    return render(
+        request,
+        "core/erro.html",
+        contexto,
+        status=500,
+    )

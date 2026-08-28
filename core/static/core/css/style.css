@@ -1464,3 +1464,264 @@ button {
     }
 
 }
+
+/* ---------- PÁGINAS DE ERRO ---------- */
+
+.pagina-erro {
+    min-height: calc(100vh - 150px);
+
+    display: flex;
+    align-items: center;
+
+    padding: 72px 0;
+}
+
+
+.card-erro {
+    max-width: 680px;
+
+    margin: 0 auto;
+    padding: 48px;
+
+    background-color: var(--cor-superficie);
+
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-grande);
+
+    box-shadow: var(--sombra-destaque);
+
+    text-align: center;
+}
+
+
+.codigo-erro {
+    display: block;
+
+    margin-bottom: 12px;
+
+    color: var(--cor-verde);
+
+    font-size: clamp(3rem, 8vw, 5rem);
+    font-weight: 800;
+    line-height: 1;
+}
+
+
+.card-erro h1 {
+    margin: 0 0 16px;
+
+    color: var(--cor-verde-escuro);
+
+    font-size: 2rem;
+}
+
+
+.card-erro p {
+    max-width: 560px;
+
+    margin: 0 auto;
+
+    color: var(--cor-texto-suave);
+
+    font-size: 1.05rem;
+}
+
+
+.acoes-erro {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+    margin-top: 28px;
+}
+
+
+@media (max-width: 600px) {
+
+    .card-erro {
+        padding: 36px 22px;
+    }
+
+
+    .acoes-erro {
+        flex-direction: column;
+    }
+
+
+    .acoes-erro .botao {
+        width: 100%;
+    }
+
+}
+
+/* ---------- EXCLUSÃO DE LIVRO ---------- */
+
+.pagina-exclusao {
+    min-height: calc(100vh - 150px);
+
+    display: flex;
+    align-items: center;
+
+    padding: 72px 0;
+}
+
+
+.exclusao-container {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(380px, 480px);
+
+    align-items: start;
+
+    gap: 72px;
+}
+
+
+.exclusao-apresentacao {
+    padding-top: 24px;
+}
+
+
+.exclusao-apresentacao h1 {
+    max-width: 600px;
+
+    margin: 14px 0;
+
+    color: var(--cor-verde-escuro);
+
+    font-size: 3rem;
+    line-height: 1.1;
+}
+
+
+.exclusao-apresentacao > p {
+    max-width: 580px;
+
+    color: var(--cor-texto-suave);
+
+    font-size: 1.1rem;
+}
+
+
+.card-exclusao {
+    padding: 36px;
+
+    background-color: var(--cor-superficie);
+
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-grande);
+
+    box-shadow: var(--sombra-destaque);
+}
+
+
+.cabecalho-exclusao {
+    text-align: center;
+}
+
+
+.icone-alerta {
+    width: 64px;
+    height: 64px;
+
+    display: grid;
+    place-items: center;
+
+    margin: 0 auto 18px;
+
+    background-color: #fff3e0;
+    color: #b45309;
+
+    border-radius: 50%;
+
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+
+.cabecalho-exclusao h2 {
+    margin: 0 0 8px;
+
+    color: var(--cor-verde-escuro);
+}
+
+
+.cabecalho-exclusao p {
+    margin: 0;
+
+    color: var(--cor-texto-secundario);
+}
+
+
+.acoes-exclusao {
+    display: flex;
+
+    gap: 12px;
+
+    margin-top: 28px;
+}
+
+
+.acoes-exclusao .botao {
+    flex: 1;
+}
+
+
+.botao-perigo {
+    background-color: #b42318;
+    color: #ffffff;
+
+    border-color: #b42318;
+}
+
+
+.botao-perigo:hover {
+    background-color: #912018;
+    border-color: #912018;
+}
+
+
+@media (max-width: 800px) {
+
+    .exclusao-container {
+        grid-template-columns: 1fr;
+
+        gap: 40px;
+    }
+
+
+    .exclusao-apresentacao {
+        padding-top: 0;
+    }
+
+
+    .exclusao-apresentacao h1 {
+        font-size: 2.3rem;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .pagina-exclusao {
+        padding: 48px 0;
+    }
+
+
+    .card-exclusao {
+        padding: 26px 22px;
+    }
+
+
+    .acoes-exclusao {
+        flex-direction: column;
+    }
+
+
+    .acoes-exclusao .botao {
+        width: 100%;
+    }
+
+}

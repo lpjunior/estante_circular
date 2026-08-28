@@ -53,6 +53,7 @@
                 <a href="#" class="botao botao-principal">Demonstrar interesse</a>  
                 {% if user.is_authenticated %}
                 <a href="{% url 'core:editar_livro' livro.id %}" class="botao botao-secundario">Editar Livro</a>
+                <a href="{% url 'core:excluir_livro' livro.id %}" class="botao botao-perigo">Remover Livro</a>
                 {% endif %}
                 <a href="{% url 'core:catalogo' %}" class="botao botao-secundario">Continuar procurando</a>
           </div>

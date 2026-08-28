@@ -1,0 +1,83 @@
+{% extends 'core/base.html' %}
+
+{% block title %}
+  Remover Livro | Estante Circular
+{% endblock %}
+
+{% block content %}
+  <section class="pagina-exclusao">
+    <div class="container exclusao-container">
+      <div class="exclusao-apresentacao">
+        <span class="etiqueta">Remover livro</span>
+
+        <h1>Confirmar remoção</h1>
+
+        <p>O livro será removido do catálogo, mas continuará armazenado no sistema para manter o histórico e a rastreabilidade.</p>
+
+        <div class="informacao-destaque">
+          <strong>Exclusão lógica</strong>
+
+          <p>Esta ação não apaga o registro do banco de dados. O livro apenas será marcado como inativo e deixará de aparecer no catálogo.</p>
+        </div>
+      </div>
+
+      <div class="card-exclusao">
+        <div class="cabecalho-exclusao">
+          <span class="icone-alerta">!</span>
+
+          <h2>Deseja remover este livro?</h2>
+
+          <p>Confira as informações antes de confirmar a operação.</p>
+        </div>
+
+        <div class="resumo-livro">
+          <div class="resumo-item">
+            <span>Título</span>
+
+            <strong>{{ livro.titulo }}</strong>
+          </div>
+
+          <div class="resumo-item">
+            <span>Autor</span>
+
+            <strong>{{ livro.autor }}</strong>
+          </div>
+
+          <div class="resumo-item">
+            <span>Gênero</span>
+
+            <strong>{{ livro.genero }}</strong>
+          </div>
+
+          <div class="resumo-item">
+            <span>Estado de conservação</span>
+
+            <strong>{{ livro.estado_conservacao }}</strong>
+          </div>
+
+          <div class="resumo-item">
+            <span>Responsável</span>
+
+            <strong>
+              {% if livro.responsavel.get_full_name %}
+                {{ livro.responsavel.get_full_name }}
+              {% else %}
+                {{ livro.responsavel.username }}
+              {% endif %}
+            </strong>
+          </div>
+        </div>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="acoes-exclusao">
+            <a href="{% url 'core:detalhes_livro' livro.pk %}" class="botao botao-secundario">Cancelar</a>
+
+            <button type="submit" class="botao botao-perigo">Confirmar remoção</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+{% endblock %}
