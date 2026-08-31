@@ -1723,5 +1723,244 @@ button {
     .acoes-exclusao .botao {
         width: 100%;
     }
+}
 
+/* ---------- MEUS LIVROS ---------- */
+
+.pagina-meus-livros {
+    min-height: calc(100vh - 150px);
+
+    padding: 72px 0;
+}
+
+
+.meus-livros-cabecalho {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 32px;
+
+    margin-bottom: 40px;
+}
+
+
+.meus-livros-cabecalho h1 {
+    margin: 14px 0;
+
+    color: var(--cor-verde-escuro);
+
+    font-size: 3rem;
+    line-height: 1.1;
+}
+
+
+.meus-livros-cabecalho p {
+    max-width: 620px;
+
+    margin-bottom: 0;
+
+    color: var(--cor-texto-suave);
+
+    font-size: 1.1rem;
+}
+
+
+.grade-meus-livros {
+    display: grid;
+
+    gap: 20px;
+}
+
+
+.card-meu-livro {
+    padding: 26px;
+
+    background-color: var(--cor-superficie);
+
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-grande);
+
+    box-shadow: var(--sombra-card);
+}
+
+
+.meu-livro-cabecalho {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 24px;
+}
+
+
+.meu-livro-cabecalho h2 {
+    margin: 6px 0 2px;
+
+    color: var(--cor-verde);
+
+    font-size: 1.4rem;
+}
+
+
+.meu-livro-cabecalho p {
+    margin: 0;
+
+    color: var(--cor-texto-suave);
+}
+
+
+.status-livro {
+    flex-shrink: 0;
+
+    padding: 6px 12px;
+
+    border-radius: 999px;
+
+    font-size: 0.78rem;
+    font-weight: 800;
+
+    text-transform: uppercase;
+}
+
+
+.status-ativo {
+    background-color: #e0eee5;
+    color: var(--cor-verde);
+}
+
+
+.status-inativo {
+    background-color: #eceff1;
+    color: #607d8b;
+}
+
+
+.meu-livro-informacoes {
+    display: flex;
+
+    gap: 32px;
+
+    margin-top: 20px;
+    padding-top: 18px;
+
+    border-top: 1px solid var(--cor-borda);
+}
+
+
+.meu-livro-informacoes div {
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.meu-livro-informacoes span {
+    color: var(--cor-texto-secundario);
+
+    font-size: 0.78rem;
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+
+.meu-livro-informacoes strong {
+    color: var(--cor-texto);
+}
+
+
+.meu-livro-acoes {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    margin-top: 22px;
+}
+
+
+.texto-livro-inativo {
+    color: var(--cor-texto-secundario);
+
+    font-style: italic;
+}
+
+
+@media (max-width: 700px) {
+
+    .meus-livros-cabecalho {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+
+    .meus-livros-cabecalho h1 {
+        font-size: 2.3rem;
+    }
+
+
+    .meu-livro-cabecalho {
+        flex-direction: column;
+    }
+
+
+    .meu-livro-acoes {
+        flex-direction: column;
+    }
+
+
+    .meu-livro-acoes .botao {
+        width: 100%;
+    }
+
+}
+
+/* ---------- MENSAGENS DO SISTEMA ---------- */
+
+.mensagens-sistema {
+    padding-top: 20px;
+}
+
+
+.mensagem-sistema {
+    padding: 14px 18px;
+
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-pequeno);
+
+    font-weight: 600;
+}
+
+
+.mensagem-sistema.success {
+    background-color: #e8f3ec;
+    color: #315c4b;
+
+    border-color: #c6dccd;
+}
+
+
+.mensagem-sistema.error {
+    background-color: #fdecec;
+    color: #a22d2d;
+
+    border-color: #f3c4c4;
+}
+
+
+.mensagem-sistema.warning {
+    background-color: #fff5e5;
+    color: #8a5700;
+
+    border-color: #f2d7a5;
+}
+
+
+.mensagem-sistema.info {
+    background-color: #edf4f7;
+    color: #46616d;
+
+    border-color: #cfdee4;
 }

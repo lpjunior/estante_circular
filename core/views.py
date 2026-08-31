@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -66,6 +67,11 @@ def login_view(request: HttpRequest) -> HttpResponse:
         if usuario is not None:
             login(request=request, user=usuario)
 
+            messages.success(
+                request=request,
+                message='Login realizado com sucesso.'
+            )
+
             if next_url:
                 return redirect(next_url)
 
@@ -78,13 +84,17 @@ def login_view(request: HttpRequest) -> HttpResponse:
 
 def logout_view(request: HttpRequest) -> HttpResponse:
     logout(request=request)
+
+    messages.info(
+        request=request,
+        message='Você saiu da sua conta.'
+    )
+    
     return redirect("core:index")
 
 
 @login_required
 def disponibilizar_livro(request: HttpRequest) -> HttpResponse:
-    contexto = {}
-
     if request.method == "POST":
         titulo = request.POST.get("titulo", "").strip()
         autor = request.POST.get("autor", "").strip()
@@ -101,15 +111,19 @@ def disponibilizar_livro(request: HttpRequest) -> HttpResponse:
             descricao=descricao,
         )
 
-        contexto = {
-            "livro_enviado": True,
-            "livro": livro,
-        }
+        messages.success(
+            request=request,
+            message='Livro disponibilizado com sucesso.',
+        )
+
+        return redirect(
+            "core:detalhes_livro",
+            id=livro.pk,
+        )
 
     return render(
-        request,
-        "core/disponibilizar_livro.html",
-        contexto,
+        request=request,
+        template_name='core/disponibilizar_livro.html'
     )
 
 
@@ -184,9 +198,14 @@ def editar_livro(request: HttpRequest, id: int) -> HttpResponse:
 
         livro.save()
 
+        messages.success(
+            request=request,
+            message='Livro atualizado com sucesso.'
+        )
+
         return redirect(
             "core:detalhes_livro",
-            id=livro.id,
+            id=livro.pk,
         )
 
     contexto = {
@@ -208,7 +227,12 @@ def excluir_livro(request: HttpRequest, id: int) -> HttpResponse:
         livro.ativo = False
         livro.save()
 
-        return redirect('core:catalogo')
+        messages.success(
+            request=request,
+            message='Livro removido com sucesso.'
+        )
+
+        return redirect('core:meus_livros')
 
     contexto = {
         'livro': livro
@@ -217,6 +241,21 @@ def excluir_livro(request: HttpRequest, id: int) -> HttpResponse:
     return render(
         request=request,
         template_name='core/excluir_livro.html',
+        context=contexto
+    )
+
+@login_required
+def meus_livros(request: HttpRequest) -> HttpResponse:
+
+    livros = Livro.objects.filter(responsavel=request.user).order_by('-id')
+
+    contexto = {
+        'livros': livros
+    }
+
+    return render(
+        request=request,
+        template_name='core/meus_livros.html',
         context=contexto
     )
 

@@ -41,6 +41,9 @@
               </li>
             {% else %}
               <li>
+                <a href="{% url 'core:meus_livros' %}">Meus Livros</a>
+              </li>
+              <li>
                 <span>
                   {% if user.first_name %}
                     Olá, {{ user.first_name }}
@@ -57,6 +60,18 @@
         </nav>
       </div>
     </header>
+    
+    {% if messages %}
+      <div class="mensagens-sistema">
+        <div class="container">
+          {% for message in messages %}
+            <div class="mensagem-sistema {{ message.tags }}" role="alert">
+              <span>{{ message }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
 
     <main>
       {% block content %}

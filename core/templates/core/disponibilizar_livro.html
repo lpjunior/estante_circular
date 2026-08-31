@@ -22,55 +22,6 @@
       </div>
 
       <div class="card-disponibilizar">
-        {% if livro_enviado %}
-          <div class="confirmacao-livro">
-            <span class="icone-sucesso">✓</span>
-
-            <h2>Livro recebido com sucesso!</h2>
-
-            <p>Confira as informações enviadas:</p>
-
-            <div class="resumo-livro">
-              <div class="resumo-item">
-                <span>Título</span>
-
-                <strong>{{ livro.titulo }}</strong>
-              </div>
-
-              <div class="resumo-item">
-                <span>Autor</span>
-
-                <strong>{{ livro.autor }}</strong>
-              </div>
-
-              <div class="resumo-item">
-                <span>Gênero</span>
-
-                <strong>{{ livro.genero }}</strong>
-              </div>
-
-              <div class="resumo-item">
-                <span>Estado de conservação</span>
-
-                <strong>{{ livro.estado_conservacao }}</strong>
-              </div>
-
-              <div class="resumo-item">
-                <span>Disponibilizado por</span>
-
-                <strong>{{ livro.responsavel.first_name }}</strong>
-              </div>
-
-              <div class="resumo-item">
-                <span>Descrição</span>
-
-                <strong>{{ livro.descricao }}</strong>
-              </div>
-            </div>
-
-            <a href="{% url 'core:disponibilizar_livro' %}" class="botao botao-principal">Disponibilizar outro livro</a>
-          </div>
-        {% else %}
           <div class="cabecalho-formulario">
             <h2>Dados do livro</h2>
 
@@ -148,7 +99,6 @@
 
             <button type="submit" class="botao botao-principal botao-formulario">Disponibilizar livro</button>
           </form>
-        {% endif %}
       </div>
     </div>
   </section>

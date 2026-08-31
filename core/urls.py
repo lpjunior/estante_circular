@@ -51,4 +51,9 @@ urlpatterns = [
         views.cadastro_view,
         name='cadastro',
     ),
+    path(
+        'meus-livros/',
+        views.meus_livros,
+        name='meus_livros',
+    ),
 ]
