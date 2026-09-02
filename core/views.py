@@ -8,6 +8,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from core.models import Livro
 
+from .forms import LivroForm
+
 
 def index(request: HttpRequest) -> HttpResponse:
 
@@ -96,34 +98,33 @@ def logout_view(request: HttpRequest) -> HttpResponse:
 @login_required
 def disponibilizar_livro(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
-        titulo = request.POST.get("titulo", "").strip()
-        autor = request.POST.get("autor", "").strip()
-        genero = request.POST.get("genero", "").strip()
-        estado_conservacao = request.POST.get("estado_conservacao", "").strip()
-        descricao = request.POST.get("descricao", "").strip()
+        form = LivroForm(request.POST)
 
-        livro = Livro.objects.create(
-            titulo=titulo,
-            autor=autor,
-            genero=genero,
-            estado_conservacao=estado_conservacao,
-            responsavel=request.user,
-            descricao=descricao,
-        )
+        if form.is_valid(): # validação dos campos do formulário
+            livro = form.save(commit=False) # cria o objeto Livro sem salvar no banco de dados ainda
+            livro.responsavel = request.user # atribui o usuário logado como responsável pelo livro
+            livro.save() # salva o objeto Livro no banco de dados
 
-        messages.success(
-            request=request,
-            message='Livro disponibilizado com sucesso.',
-        )
+            messages.success(
+                request=request,
+                message='Livro disponibilizado com sucesso.',
+            )
 
-        return redirect(
-            "core:detalhes_livro",
-            id=livro.pk,
-        )
+            return redirect(
+                "core:detalhes_livro",
+                id=livro.pk,
+            )
+    else:
+        form = LivroForm()
+
+    contexto = {
+        "form": form,
+    }
 
     return render(
         request=request,
-        template_name='core/disponibilizar_livro.html'
+        template_name='core/disponibilizar_livro.html',
+        context=contexto,
     )
 
 

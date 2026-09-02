@@ -32,69 +32,69 @@
             {% csrf_token %}
 
             <div class="campo">
-              <label for="titulo">Título do livro</label>
+              <label for="{{ form.titulo.id_for_label }}">{{ form.titulo.label }}</label>
 
-              <input type="text" id="titulo" name="titulo" placeholder="Ex.: O Hobbit" required />
+              {{ form.titulo }}
+
+              {% for erro in form.titulo.errors %}
+                <span class="erro-campo">
+                  {{ erro }}
+                </span>
+              {% endfor %}
             </div>
 
             <div class="campo">
-              <label for="autor">Autor</label>
+              <label for="{{ form.autor.id_for_label }}">{{ form.autor.label }}</label>
 
-              <input type="text" id="autor" name="autor" placeholder="Ex.: J. R. R. Tolkien" required />
+              {{ form.autor }}
+
+              {% for erro in form.autor.errors %}
+                <span class="erro-campo">
+                  {{ erro }}
+                </span>
+              {% endfor %}
             </div>
 
             <div class="campo">
-              <label for="genero">Gênero ou categoria</label>
+              <label for="{{ form.genero.id_for_label }}">{{ form.genero.label }}</label>
 
-              <select id="genero" name="genero" required>
-                <option value="">Selecione</option>
+              {{ form.genero }}
 
-                <option value="Fantasia">Fantasia</option>
-
-                <option value="Ficção">Ficção</option>
-
-                <option value="Romance">Romance</option>
-
-                <option value="Terror">Terror</option>
-
-                <option value="Suspense">Suspense</option>
-
-                <option value="Aventura">Aventura</option>
-
-                <option value="Biografia">Biografia</option>
-
-                <option value="Literatura Brasileira">Literatura Brasileira</option>
-
-                <option value="Outros">Outros</option>
-              </select>
+              {% for erro in form.genero.errors %}
+                <span class="erro-campo">
+                  {{ erro }}
+                </span>
+              {% endfor %}
             </div>
 
             <div class="campo">
-              <label for="estado_conservacao">Estado de conservação</label>
+              <label for="{{ form.estado_conservacao.id_for_label }}">{{ form.estado_conservacao.label }}</label>
 
-              <select id="estado_conservacao" name="estado_conservacao" required>
-                <option value="">Selecione</option>
+              {{ form.estado_conservacao }}
 
-                <option value="Novo">Novo</option>
-
-                <option value="Muito bom">Muito bom</option>
-
-                <option value="Bom">Bom</option>
-
-                <option value="Regular">Regular</option>
-              </select>
+              {% for erro in form.estado_conservacao.errors %}
+                <span class="erro-campo">
+                  {{ erro }}
+                </span>
+              {% endfor %}
             </div>
 
             <div class="campo">
-              <label for="descricao">Descrição</label>
+              <label for="{{ form.descricao.id_for_label }}">{{ form.descricao.label }}</label>
 
-              <textarea id="descricao" name="descricao" placeholder="Descrição do livro" required></textarea>
+              {{ form.descricao }}
+
+              {% for erro in form.descricao.errors %}
+                <span class="erro-campo">
+                  {{ erro }}
+                </span>
+              {% endfor %}
             </div>
 
             <div class="campo">
-              <label for="responsavel">Seu nome</label>
+              <label for="responsavel">Disponbilizado por</label>
 
-              <input type="text" id="responsavel" name="responsavel" placeholder="Nome da pessoa responsável" value="{{ user.first_name }}" disabled />
+              <input type="text" id="responsavel" value="{{ user.get_full_name }}" readonly />
             </div>
 
             <button type="submit" class="botao botao-principal botao-formulario">Disponibilizar livro</button>
