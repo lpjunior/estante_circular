@@ -4,7 +4,7 @@ from core.models import Livro
 
 
 class LivroForm(forms.ModelForm):
-    GENEROS = [
+    GENEROS = (
         ("fantasia", "Fantasia"),
         ("ficcao", "Ficção"),
         ("romance", "Romance"),
@@ -14,14 +14,14 @@ class LivroForm(forms.ModelForm):
         ("biografia", "Biografia"),
         ("literatura_brasileira", "Literatura Brasileira"),
         ("outros", "Outros"),
-    ]
+    )
 
-    ESTADO_CONSERVACAO = [
+    ESTADO_CONSERVACAO = (
         ("novo", "Novo"),
         ("muito_bom", "Muito Bom"),
         ("bom", "Bom"),
         ("regular", "Regular"),
-    ]
+    )
 
     genero = forms.ChoiceField(choices=GENEROS, label="Gênero ou categoria")
 
@@ -31,15 +31,15 @@ class LivroForm(forms.ModelForm):
 
     class Meta:
         model = Livro
-        fields = ["titulo", "autor", "genero", "estado_conservacao", "descricao"]
+        fields = ("titulo", "autor", "genero", "estado_conservacao", "descricao")
 
-        labels = {
+        labels = {  # noqa: RUF012
             "titulo": "Título do livro",
             "autor": "Autor",
             "descricao": "Descrição do livro",
         }
 
-        widgets = {
+        widgets = {  # noqa: RUF012
             "titulo": forms.TextInput(
                 attrs={
                     "placeholder": "Ex.: O Hobbit",

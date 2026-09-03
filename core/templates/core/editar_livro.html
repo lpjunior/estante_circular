@@ -1,322 +1,102 @@
 {% extends 'core/base.html' %}
 
-
 {% block title %}
-    Editar Livro | Estante Circular
+  Editar Livro | Estante Circular
 {% endblock %}
 
-
 {% block content %}
-
-<section class="pagina-disponibilizar">
-
+  <section class="pagina-disponibilizar">
     <div class="container disponibilizar-container">
+      <div class="disponibilizar-apresentacao">
+        <span class="etiqueta">Atualizar livro</span>
 
-        <div class="disponibilizar-apresentacao">
+        <h1>Editar informações do livro</h1>
 
-            <span class="etiqueta">
-                Atualizar livro
-            </span>
+        <p>Atualize os dados do livro selecionado. As alterações serão armazenadas no banco de dados da Estante Circular.</p>
 
-            <h1>
-                Editar informações do livro
-            </h1>
+        <div class="informacao-destaque">
+          <strong>Livro selecionado</strong>
 
-            <p>
-                Atualize os dados do livro selecionado.
-                As alterações serão armazenadas no banco
-                de dados da Estante Circular.
-            </p>
+          <p>
+            Você está editando:
+            <strong>{{ livro.titulo }}</strong>
+          </p>
+        </div>
+      </div>
 
-            <div class="informacao-destaque">
+      <div class="card-disponibilizar">
+        <div class="cabecalho-formulario">
+          <h2>Dados do livro</h2>
 
-                <strong>
-                    Livro selecionado
-                </strong>
-
-                <p>
-                    Você está editando:
-                    <strong>
-                        {{ livro.titulo }}
-                    </strong>
-                </p>
-
-            </div>
-
+          <p>Altere somente as informações necessárias.</p>
         </div>
 
+        <form method="post">
+          {% csrf_token %}
 
-        <div class="card-disponibilizar">
+          <div class="campo">
+            <label for="{{ form.titulo.id_for_label }}">{{ form.titulo.label }}</label>
 
-            <div class="cabecalho-formulario">
+            {{ form.titulo }}
 
-                <h2>
-                    Dados do livro
-                </h2>
+            {% for erro in form.titulo.errors %}
+              <span class="erro-campo">{{ erro }}</span>
+            {% endfor %}
+          </div>
 
-                <p>
-                    Altere somente as informações necessárias.
-                </p>
+          <div class="campo">
+            <label for="{{ form.autor.id_for_label }}">{{ form.autor.label }}</label>
 
-            </div>
-
-
-            <form method="post">
-
-                {% csrf_token %}
-
-
-                <div class="campo">
-
-                    <label for="titulo">
-                        Título do livro
-                    </label>
-
-                    <input
-                        type="text"
-                        id="titulo"
-                        name="titulo"
-                        value="{{ livro.titulo }}"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="campo">
-
-                    <label for="autor">
-                        Autor
-                    </label>
-
-                    <input
-                        type="text"
-                        id="autor"
-                        name="autor"
-                        value="{{ livro.autor }}"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="campo">
-
-                    <label for="genero">
-                        Gênero ou categoria
-                    </label>
-
-                    <select
-                        id="genero"
-                        name="genero"
-                        required
-                    >
-
-                        <option value="">
-                            Selecione
-                        </option>
-
-                        <option
-                            value="Fantasia"
-                            {% if livro.genero == 'Fantasia' %}
-                                selected
-                            {% endif %}
-                        >
-                            Fantasia
-                        </option>
-
-                        <option
-                            value="Ficção"
-                            {% if livro.genero == 'Ficção' %}
-                                selected
-                            {% endif %}
-                        >
-                            Ficção
-                        </option>
-
-                        <option
-                            value="Romance"
-                            {% if livro.genero == 'Romance' %}
-                                selected
-                            {% endif %}
-                        >
-                            Romance
-                        </option>
-
-                        <option
-                            value="Terror"
-                            {% if livro.genero == 'Terror' %}
-                                selected
-                            {% endif %}
-                        >
-                            Terror
-                        </option>
-
-                        <option
-                            value="Suspense"
-                            {% if livro.genero == 'Suspense' %}
-                                selected
-                            {% endif %}
-                        >
-                            Suspense
-                        </option>
-
-                        <option
-                            value="Aventura"
-                            {% if livro.genero == 'Aventura' %}
-                                selected
-                            {% endif %}
-                        >
-                            Aventura
-                        </option>
-
-                        <option
-                            value="Biografia"
-                            {% if livro.genero == 'Biografia' %}
-                                selected
-                            {% endif %}
-                        >
-                            Biografia
-                        </option>
-
-                        <option
-                            value="Literatura Brasileira"
-                            {% if livro.genero == 'Literatura Brasileira' %}
-                                selected
-                            {% endif %}
-                        >
-                            Literatura Brasileira
-                        </option>
-
-                        <option
-                            value="Outros"
-                            {% if livro.genero == 'Outros' %}
-                                selected
-                            {% endif %}
-                        >
-                            Outros
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="campo">
-
-                    <label for="estado_conservacao">
-                        Estado de conservação
-                    </label>
-
-                    <select
-                        id="estado_conservacao"
-                        name="estado_conservacao"
-                        required
-                    >
-
-                        <option value="">
-                            Selecione
-                        </option>
-
-                        <option
-                            value="Novo"
-                            {% if livro.estado_conservacao == 'Novo' %}
-                                selected
-                            {% endif %}
-                        >
-                            Novo
-                        </option>
-
-                        <option
-                            value="Muito bom"
-                            {% if livro.estado_conservacao == 'Muito bom' %}
-                                selected
-                            {% endif %}
-                        >
-                            Muito bom
-                        </option>
-
-                        <option
-                            value="Bom"
-                            {% if livro.estado_conservacao == 'Bom' %}
-                                selected
-                            {% endif %}
-                        >
-                            Bom
-                        </option>
-
-                        <option
-                            value="Regular"
-                            {% if livro.estado_conservacao == 'Regular' %}
-                                selected
-                            {% endif %}
-                        >
-                            Regular
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="campo">
-
-                    <label for="descricao">
-                        Descrição
-                    </label>
-
-                    <textarea
-                        id="descricao"
-                        name="descricao"
-                        rows="6"
-                        required
-                    >{{ livro.descricao }}</textarea>
-
-                </div>
-
-
-                <div class="campo">
-
-                    <label for="responsavel">
-                        Responsável
-                    </label>
-
-                    <input
-                        type="text"
-                        id="responsavel"
-                        name="responsavel"
-                        value="{{ livro.responsavel.first_name }}"
-                        disabled
-                    >
-
-                </div>
-
-
-                <div class="acoes-formulario">
-
-                    <button
-                        type="submit"
-                        class="botao botao-principal"
-                    >
-                        Salvar alterações
-                    </button>
-
-
-                    <a
-                        href="{% url 'core:detalhes_livro' livro.id %}"
-                        class="botao botao-secundario"
-                    >
-                        Cancelar
-                    </a>
-
-                </div>
-
-            </form>
-
-        </div>
+            {{ form.autor }}
 
+            {% for erro in form.autor.errors %}
+              <span class="erro-campo">{{ erro }}</span>
+            {% endfor %}
+          </div>
+
+          <div class="campo">
+            <label for="{{ form.genero.id_for_label }}">{{ form.genero.label }}</label>
+
+            {{ form.genero }}
+
+            {% for erro in form.genero.errors %}
+              <span class="erro-campo">{{ erro }}</span>
+            {% endfor %}
+          </div>
+
+          <div class="campo">
+            <label for="{{ form.estado_conservacao.id_for_label }}">{{ form.estado_conservacao.label }}</label>
+
+            {{ form.estado_conservacao }}
+
+            {% for erro in form.estado_conservacao.errors %}
+              <span class="erro-campo">{{ erro }}</span>
+            {% endfor %}
+          </div>
+
+          <div class="campo">
+            <label for="{{ form.descricao.id_for_label }}">{{ form.descricao.label }}</label>
+
+            {{ form.descricao }}
+
+            {% for erro in form.descricao.errors %}
+              <span class="erro-campo">{{ erro }}</span>
+            {% endfor %}
+          </div>
+
+          <div class="campo">
+            <label for="responsavel">Responsável</label>
+
+            <input type="text" id="responsavel" value="{{ livro.responsavel.get_full_name }}" readonly />
+          </div>
+
+          <div class="acoes-formulario">
+            <button type="submit" class="botao botao-principal">Salvar alterações</button>
+
+            <a href="{% url 'core:detalhes_livro' livro.pk %}" class="botao botao-secundario">Cancelar</a>
+          </div>
+        </form>
+      </div>
     </div>
-
-</section>
-
+  </section>
 {% endblock %}

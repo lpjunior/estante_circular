@@ -1964,3 +1964,23 @@ button {
 
     border-color: #cfdee4;
 }
+
+/* ---------- VALIDAÇÃO DE FORMULÁRIOS ---------- */
+
+.erro-campo {
+    display: block;
+
+    margin-top: 6px;
+
+    color: #a22d2d;
+
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+
+.campo input[aria-invalid="true"],
+.campo select[aria-invalid="true"],
+.campo textarea[aria-invalid="true"] {
+    border-color: #c65b5b;
+}

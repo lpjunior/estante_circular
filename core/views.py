@@ -69,10 +69,7 @@ def login_view(request: HttpRequest) -> HttpResponse:
         if usuario is not None:
             login(request=request, user=usuario)
 
-            messages.success(
-                request=request,
-                message='Login realizado com sucesso.'
-            )
+            messages.success(request=request, message="Login realizado com sucesso.")
 
             if next_url:
                 return redirect(next_url)
@@ -87,11 +84,8 @@ def login_view(request: HttpRequest) -> HttpResponse:
 def logout_view(request: HttpRequest) -> HttpResponse:
     logout(request=request)
 
-    messages.info(
-        request=request,
-        message='Você saiu da sua conta.'
-    )
-    
+    messages.info(request=request, message="Você saiu da sua conta.")
+
     return redirect("core:index")
 
 
@@ -100,14 +94,18 @@ def disponibilizar_livro(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         form = LivroForm(request.POST)
 
-        if form.is_valid(): # validação dos campos do formulário
-            livro = form.save(commit=False) # cria o objeto Livro sem salvar no banco de dados ainda
-            livro.responsavel = request.user # atribui o usuário logado como responsável pelo livro
-            livro.save() # salva o objeto Livro no banco de dados
+        if form.is_valid():  # validação dos campos do formulário
+            livro = form.save(
+                commit=False
+            )  # cria o objeto Livro sem salvar no banco de dados ainda
+            livro.responsavel = (
+                request.user
+            )  # atribui o usuário logado como responsável pelo livro
+            livro.save()  # salva o objeto Livro no banco de dados
 
             messages.success(
                 request=request,
-                message='Livro disponibilizado com sucesso.',
+                message="Livro disponibilizado com sucesso.",
             )
 
             return redirect(
@@ -123,7 +121,7 @@ def disponibilizar_livro(request: HttpRequest) -> HttpResponse:
 
     return render(
         request=request,
-        template_name='core/disponibilizar_livro.html',
+        template_name="core/disponibilizar_livro.html",
         context=contexto,
     )
 
@@ -185,80 +183,82 @@ def detalhes_livro(request: HttpRequest, id: int) -> HttpResponse:
 
 @login_required
 def editar_livro(request: HttpRequest, id: int) -> HttpResponse:
-    livro = get_object_or_404(Livro.objects.select_related("responsavel"), ativo=True, id=id)
+    livro = get_object_or_404(
+        Livro.objects.select_related("responsavel"), ativo=True, pk=id
+    )
 
     if livro.responsavel != request.user:
         raise PermissionDenied("Você não tem permissão para editar este livro.")
 
     if request.method == "POST":
-        livro.titulo = request.POST.get("titulo", "").strip()
-        livro.autor = request.POST.get("autor", "").strip()
-        livro.genero = request.POST.get("genero", "").strip()
-        livro.estado_conservacao = request.POST.get("estado_conservacao", "").strip()
-        livro.descricao = request.POST.get("descricao", "").strip()
-
-        livro.save()
-
-        messages.success(
-            request=request,
-            message='Livro atualizado com sucesso.'
+        form = LivroForm(
+            request.POST,
+            instance=livro,
         )
 
-        return redirect(
-            "core:detalhes_livro",
-            id=livro.pk,
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                "Livro atualizado com sucesso.",
+            )
+
+            return redirect(
+                "core:detalhes_livro",
+                id=livro.pk,
+            )
+
+    else:
+        form = LivroForm(
+            instance=livro,
         )
 
     contexto = {
         "livro": livro,
+        "form": form,
     }
 
-    return render(request, "core/editar_livro.html", contexto)
+    return render(
+        request,
+        "core/editar_livro.html",
+        contexto,
+    )
 
 
 @login_required
 def excluir_livro(request: HttpRequest, id: int) -> HttpResponse:
     livro = get_object_or_404(Livro, id=id, ativo=True)
 
-
     if livro.responsavel != request.user:
-        raise PermissionDenied('Você não tem permissão para remover este livro.')
+        raise PermissionDenied("Você não tem permissão para remover este livro.")
 
-    if request.method == 'POST':
+    if request.method == "POST":
         livro.ativo = False
         livro.save()
 
-        messages.success(
-            request=request,
-            message='Livro removido com sucesso.'
-        )
+        messages.success(request=request, message="Livro removido com sucesso.")
 
-        return redirect('core:meus_livros')
+        return redirect("core:meus_livros")
 
-    contexto = {
-        'livro': livro
-    }
+    contexto = {"livro": livro}
 
     return render(
-        request=request,
-        template_name='core/excluir_livro.html',
-        context=contexto
+        request=request, template_name="core/excluir_livro.html", context=contexto
     )
+
 
 @login_required
 def meus_livros(request: HttpRequest) -> HttpResponse:
 
-    livros = Livro.objects.filter(responsavel=request.user).order_by('-id')
+    livros = Livro.objects.filter(responsavel=request.user).order_by("-id")
 
-    contexto = {
-        'livros': livros
-    }
+    contexto = {"livros": livros}
 
     return render(
-        request=request,
-        template_name='core/meus_livros.html',
-        context=contexto
+        request=request, template_name="core/meus_livros.html", context=contexto
     )
+
 
 # =========================================================
 # TRATAMENTO DE ERROS
