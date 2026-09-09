@@ -21,3 +21,27 @@ class Livro(models.Model):
 
     def __str__(self) -> str:
         return self.titulo
+    
+class Interesse(models.Model):
+    livro = models.ForeignKey(
+        Livro,
+        on_delete=models.PROTECT,
+        related_name='interesses',
+    )
+    interessado = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name='interesses_em_livros',
+    )
+    data_interesse = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [  # noqa: RUF012
+            models.UniqueConstraint(
+                fields=['livro', 'interessado'],
+                name='interesse_unico_por_livro_usuario',
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.interessado.username} interessado em {self.livro.titulo}"

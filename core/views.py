@@ -6,7 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from core.models import Livro
+from core.models import Interesse, Livro
 
 from .forms import LivroForm
 
@@ -160,8 +160,6 @@ def catalogo(request: HttpRequest) -> HttpResponse:
 
 def detalhes_livro(request: HttpRequest, id: int) -> HttpResponse:
 
-    contexto = {}
-
     livro = Livro.objects.filter(ativo=True, id=id).first()
 
     if livro is None:
@@ -170,8 +168,14 @@ def detalhes_livro(request: HttpRequest, id: int) -> HttpResponse:
             status=404,
         )
 
+    interesses = []
+
+    if (request.user.is_authenticated and livro.responsavel == request.user):
+        interesses = livro.interesses.select_related("interessado").order_by("-data_interesse") # type: ignore
+
     contexto = {
         "livro": livro,
+        "interesses": interesses,
     }
 
     return render(
@@ -259,6 +263,33 @@ def meus_livros(request: HttpRequest) -> HttpResponse:
         request=request, template_name="core/meus_livros.html", context=contexto
     )
 
+def demonstrar_interesse(request: HttpRequest, id: int) -> HttpResponse:
+    livro = get_object_or_404(Livro, pk=id, ativo=True)
+
+    if livro.responsavel == request.user:
+        messages.error(
+            request=request,
+            message="Você não pode demonstrar interesse em um livro que você mesmo disponibilizou.",
+        )
+        return redirect("core:detalhes_livro", id=livro.pk)
+
+    _, status_criado = Interesse.objects.get_or_create(
+        livro=livro,
+        interessado=request.user,
+    )
+
+    if status_criado:
+        messages.success(
+            request=request,
+            message="Seu interesse no livro foi registrado com sucesso.",
+        )
+    else:
+        messages.info(
+            request=request,
+            message="Você já demonstrou interesse neste livro.",
+        )
+
+    return redirect("core:detalhes_livro", id=livro.pk)
 
 # =========================================================
 # TRATAMENTO DE ERROS

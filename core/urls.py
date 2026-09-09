@@ -37,6 +37,11 @@ urlpatterns = [
         name='excluir_livro'
     ),
     path(
+        'livros/<int:id>/interesse/',
+        views.demonstrar_interesse,
+        name='demonstrar_interesse',
+    ),
+    path(
         'login/',
         views.login_view,
         name='login',

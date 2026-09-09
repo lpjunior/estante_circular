@@ -5,60 +5,245 @@
 {% endblock %}
 
 {% block content %}
-  <section class="pagina-detalhes">
-    <div class="container">
-      <a href="{% url 'core:catalogo' %}" class="voltar-catalogo">← Voltar para o catálogo</a>
+<section class="pagina-detalhes">
+  <div class="container">
 
-      <div class="detalhes-livro">
-        <div class="detalhes-capa">
-          <div class="livro-capa-grande">
-            <span>📖</span>
-          </div>
+    <a href="{% url 'core:catalogo' %}" class="voltar-catalogo">
+      ← Voltar para o catálogo
+    </a>
+
+    <div class="detalhes-livro">
+
+      <!-- CAPA -->
+      <aside class="detalhes-capa">
+        <div class="livro-capa-grande">
+          <span>📖</span>
         </div>
+      </aside>
 
-        <div class="detalhes-conteudo">
+      <!-- CONTEÚDO -->
+      <main class="detalhes-conteudo">
+
+        <header class="detalhes-cabecalho">
           <span class="etiqueta">{{ livro.genero }}</span>
 
           <h1>{{ livro.titulo }}</h1>
 
-          <p class="detalhes-autor">{{ livro.autor }}</p>
+          <p class="detalhes-autor">
+            por <strong>{{ livro.autor }}</strong>
+          </p>
+        </header>
 
-          <div class="detalhes-informacoes">
-            <div class="detalhe-item">
-              <span class="detalhe-rotulo">Estado de conservação</span>
+        <!-- INFORMAÇÕES PRINCIPAIS -->
+        <div class="detalhes-informacoes">
+
+          <div class="detalhe-item">
+            <span class="detalhe-icone">✓</span>
+
+            <div>
+              <span class="detalhe-rotulo">
+                Estado de conservação
+              </span>
 
               <strong>{{ livro.estado_conservacao }}</strong>
             </div>
+          </div>
 
-            <div class="detalhe-item">
-              <span class="detalhe-rotulo">Disponibilizado por</span>
+          <div class="detalhe-item">
+            <span class="detalhe-icone">♙</span>
 
-              <strong>{{ livro.responsavel.first_name }}</strong>
+            <div>
+              <span class="detalhe-rotulo">
+                Disponibilizado por
+              </span>
+
+              <strong>
+                {{ livro.responsavel.first_name }}
+              </strong>
             </div>
           </div>
 
-          <div class="detalhes-descricao">
-            <h2>Sobre o livro</h2>
+        </div>
 
+        <!-- DESCRIÇÃO -->
+        <section class="detalhes-descricao">
+          <h2>Sobre o livro</h2>
+
+          {% if livro.descricao %}
             <p>{{ livro.descricao }}</p>
-          </div>
+          {% else %}
+            <p class="texto-apoio">
+              Nenhuma descrição foi adicionada para este livro.
+            </p>
+          {% endif %}
+        </section>
 
-          <div class="detalhes-aviso">
+        <!-- DISPONIBILIDADE -->
+        <div class="detalhes-aviso">
+          <div class="detalhes-aviso-icone">✓</div>
+
+          <div>
             <strong>Livro disponível</strong>
 
-            <p>Este livro faz parte da Estante Circular e está disponível para outro membro da comunidade.</p>
-          </div>
-
-          <div class="detalhes-acoes">
-                <a href="#" class="botao botao-principal">Demonstrar interesse</a>  
-                {% if user.is_authenticated %}
-                <a href="{% url 'core:editar_livro' livro.id %}" class="botao botao-secundario">Editar Livro</a>
-                <a href="{% url 'core:excluir_livro' livro.id %}" class="botao botao-perigo">Remover Livro</a>
-                {% endif %}
-                <a href="{% url 'core:catalogo' %}" class="botao botao-secundario">Continuar procurando</a>
+            <p>
+              Este livro faz parte da Estante Circular e está disponível
+              para outro membro da comunidade.
+            </p>
           </div>
         </div>
-      </div>
+
+        <!-- AÇÕES -->
+        <section class="detalhes-acoes">
+
+          {% if user.is_authenticated %}
+
+            {% if user != livro.responsavel %}
+
+              <form
+                action="{% url 'core:demonstrar_interesse' livro.pk %}"
+                method="post"
+                class="formulario-interesse"
+              >
+                {% csrf_token %}
+
+                <button
+                  type="submit"
+                  class="botao botao-principal"
+                >
+                  Demonstrar interesse
+                </button>
+              </form>
+
+            {% else %}
+
+              <div class="acoes-responsavel">
+
+                <div class="acoes-responsavel-texto">
+                  <strong>Este livro é seu</strong>
+
+                  <span class="texto-apoio">
+                    Você pode editar as informações ou remover o livro.
+                  </span>
+                </div>
+
+                <div class="acoes-responsavel-botoes">
+                  <a
+                    href="{% url 'core:editar_livro' livro.id %}"
+                    class="botao botao-secundario"
+                  >
+                    Editar livro
+                  </a>
+
+                  <a
+                    href="{% url 'core:excluir_livro' livro.id %}"
+                    class="botao botao-perigo"
+                  >
+                    Remover livro
+                  </a>
+                </div>
+
+              </div>
+
+            {% endif %}
+
+          {% else %}
+
+            <div class="acoes-login">
+
+              <div>
+                <strong>Interessado neste livro?</strong>
+
+                <p class="texto-apoio">
+                  Faça login para demonstrar interesse.
+                </p>
+              </div>
+
+              <a
+                href="{% url 'core:login' %}?next={% url 'core:detalhes_livro' livro.id %}"
+                class="botao botao-principal"
+              >
+                Fazer login
+              </a>
+
+            </div>
+
+          {% endif %}
+
+        </section>
+
+        <!-- INTERESSES -->
+        {% if user.is_authenticated and user == livro.responsavel %}
+          <section class="interesses-livro">
+
+            <div class="interesses-cabecalho">
+              <div>
+                <h2>Interesses demonstrados</h2>
+
+                <p>
+                  Pessoas que demonstraram interesse neste livro.
+                </p>
+              </div>
+
+              {% if interesses %}
+                <span class="interesses-contador">
+                  {{ interesses|length }}
+                </span>
+              {% endif %}
+            </div>
+
+            {% if interesses %}
+
+              <div class="lista-interesses">
+
+                {% for interesse in interesses %}
+
+                  <div class="interesse-item">
+
+                    <div class="interesse-avatar">
+                      {{ interesse.interessado.first_name|first|upper }}
+                    </div>
+
+                    <div class="interesse-dados">
+                      <strong>
+                        {{ interesse.interessado.first_name }}
+                      </strong>
+
+                      <span>
+                        Demonstrou interesse em
+                        {{ interesse.data_interesse|date:"d/m/Y" }}
+                        às
+                        {{ interesse.data_interesse|date:"H:i" }}
+                      </span>
+                    </div>
+
+                  </div>
+
+                {% endfor %}
+
+              </div>
+
+            {% else %}
+
+              <div class="interesses-vazio">
+                <span>♡</span>
+
+                <div>
+                  <strong>Nenhum interesse ainda</strong>
+
+                  <p>
+                    Quando alguém demonstrar interesse neste livro,
+                    aparecerá aqui.
+                  </p>
+                </div>
+              </div>
+
+            {% endif %}
+
+          </section>
+        {% endif %}
+
+      </main>
     </div>
-  </section>
+  </div>
+</section>
 {% endblock %}
