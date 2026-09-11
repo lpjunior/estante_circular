@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponse
@@ -263,6 +264,8 @@ def meus_livros(request: HttpRequest) -> HttpResponse:
         request=request, template_name="core/meus_livros.html", context=contexto
     )
 
+@login_required
+@require_POST
 def demonstrar_interesse(request: HttpRequest, id: int) -> HttpResponse:
     livro = get_object_or_404(Livro, pk=id, ativo=True)
 
@@ -290,6 +293,98 @@ def demonstrar_interesse(request: HttpRequest, id: int) -> HttpResponse:
         )
 
     return redirect("core:detalhes_livro", id=livro.pk)
+
+@login_required
+@require_POST
+def aceitar_interesse(request: HttpRequest, id: int) -> HttpResponse:
+
+    # Recupera o interesse pelo ID, garantindo que o livro e os usuários relacionados sejam carregados para evitar consultas adicionais ao banco de dados.
+    interesse = get_object_or_404(
+        Interesse.objects.select_related(
+            "livro", 
+            "livro__responsavel", 
+            "interessado"
+        ),
+        pk=id,
+    )
+
+    # HTTP 403 Forbidden: Se o usuário logado não for o responsável pelo livro, ele não tem permissão para aceitar o interesse.
+    if interesse.livro.responsavel != request.user:
+        raise PermissionDenied("Você não tem permissão para aceitar este interesse.")
+
+    # Regra de negócio / estado: Se o interesse já foi processado (aceito ou recusado), não é possível aceitá-lo novamente.
+    if interesse.status != Interesse.Status.PENDENTE:
+        messages.warning(
+            request=request,
+            message="Este interesse já foi processado.",
+        )
+        return redirect("core:detalhes_livro", id=interesse.livro.pk)
+    
+    interesse.status = Interesse.Status.ACEITO
+
+    interesse.save(
+        update_fields=["status"]
+    )
+
+    messages.success(
+        request=request,
+        message=f"Interesse de {interesse.interessado.username} no livro '{interesse.livro.titulo}' foi aceito.",
+    )
+
+    return redirect("core:detalhes_livro", id=interesse.livro.pk)
+
+@login_required
+@require_POST
+def recusar_interesse(request: HttpRequest, id: int) -> HttpResponse:
+    interesse = get_object_or_404(
+        Interesse.objects.select_related(
+            "livro", 
+            "livro__responsavel", 
+            "interessado"
+        ),
+        pk=id,
+    )
+
+    if interesse.livro.responsavel != request.user:
+        raise PermissionDenied("Você não tem permissão para recusar este interesse.")
+
+    if interesse.status != Interesse.Status.PENDENTE:
+        messages.warning(
+            request=request,
+            message="Este interesse já foi processado.",
+        )
+        return redirect("core:detalhes_livro", id=interesse.livro.pk)
+    
+    interesse.status = Interesse.Status.RECUSADO
+
+    interesse.save(
+        update_fields=["status"]
+    )
+
+    messages.success(
+        request=request,
+        message=f"Interesse de {interesse.interessado.username} no livro '{interesse.livro.titulo}' foi recusado.",
+    )
+
+    return redirect("core:detalhes_livro", id=interesse.livro.pk)
+
+@login_required
+def meus_interesses(request: HttpRequest) -> HttpResponse:
+    interesses = Interesse.objects.filter(
+        interessado=request.user
+    ).select_related(
+        "livro", 
+        "livro__responsavel"
+    ).order_by("-data_interesse")
+
+    # O contexto é um dicionário que contém os dados que serão passados para o template. Neste caso, estamos passando a lista de interesses do usuário logado.
+    contexto = {
+        "interesses": interesses,
+    }
+
+    return render(
+        request=request, template_name="core/meus_interesses.html", context=contexto
+    )
 
 # =========================================================
 # TRATAMENTO DE ERROS

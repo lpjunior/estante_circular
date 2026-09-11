@@ -61,4 +61,19 @@ urlpatterns = [
         views.meus_livros,
         name='meus_livros',
     ),
+    path(
+        'interesses/<int:id>/aceitar/',
+        views.aceitar_interesse,
+        name='aceitar_interesse',
+    ),
+    path(
+        'interesses/<int:id>/recusar/',
+        views.recusar_interesse,
+        name='recusar_interesse',
+    ),
+    path(
+        'meus-interesses/',
+        views.meus_interesses,
+        name='meus_interesses'
+    ),
 ]

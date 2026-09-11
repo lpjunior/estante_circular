@@ -1,0 +1,88 @@
+{% extends 'core/base.html' %}
+
+{% block title %}
+  Meus Interesses | Estante Circular
+{% endblock %}
+
+{% block content %}
+  <section class="pagina-meus-interesses">
+    <div class="container">
+      <div class="meus-interesses-cabecalho">
+        <span class="etiqueta">Minhas solicitações</span>
+
+        <h1>Meus interesses</h1>
+
+        <p>Acompanhe os livros em que você demonstrou interesse e consulte o andamento de cada solicitação.</p>
+      </div>
+
+      {% if interesses %}
+        <div class="lista-meus-interesses">
+          {% for interesse in interesses %}
+            <article class="card-meu-interesse">
+              <div class="meu-interesse-conteudo">
+                <div>
+                  <span class="genero">{{ interesse.livro.genero }}</span>
+
+                  <h2>{{ interesse.livro.titulo }}</h2>
+
+                  <p class="meu-interesse-autor">{{ interesse.livro.autor }}</p>
+                </div>
+
+                <span class="
+                                    status-interesse
+                                    status-{{ interesse.status|lower }}
+                                ">{{ interesse.get_status_display }}</span>
+              </div>
+
+              <div class="meu-interesse-informacoes">
+                <div>
+                  <span>Responsável</span>
+
+                  <strong>
+                    {% if interesse.livro.responsavel.get_full_name %}
+                      {{ interesse.livro.responsavel.get_full_name }}
+                    {% else %}
+                      {{ interesse.livro.responsavel.username }}
+                    {% endif %}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>Interesse registrado em</span>
+
+                  <strong>{{ interesse.criado_em|date:'d/m/Y H:i' }}</strong>
+                </div>
+              </div>
+
+              <div class="meu-interesse-situacao">
+                {% if interesse.status == 'PENDENTE' %}
+                  <p>Sua solicitação ainda está aguardando uma resposta do responsável pelo livro.</p>
+                {% elif interesse.status == 'ACEITO' %}
+                  <p class="texto-interesse-aceito">O responsável aceitou seu interesse. O livro poderá avançar para a próxima etapa de circulação.</p>
+                {% elif interesse.status == 'RECUSADO' %}
+                  <p class="texto-interesse-recusado">O responsável não aceitou esta solicitação.</p>
+                {% endif %}
+              </div>
+
+              <div class="meu-interesse-acoes">
+                {% if interesse.livro.ativo %}
+                  <a href="{% url 'core:detalhes_livro' interesse.livro.pk %}" class="botao botao-secundario">Ver livro</a>
+                {% else %}
+                  <span class="texto-livro-inativo">Este livro não está mais disponível no catálogo.</span>
+                {% endif %}
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="nenhum-resultado">
+          <h2>Nenhum interesse registrado</h2>
+
+          <p>Você ainda não demonstrou interesse em nenhum livro da Estante Circular.</p>
+
+          <a href="{% url 'core:catalogo' %}" class="botao botao-principal">Explorar catálogo</a>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}

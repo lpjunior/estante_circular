@@ -215,7 +215,31 @@
                         {{ interesse.data_interesse|date:"H:i" }}
                       </span>
                     </div>
+                    <div class="interesse-status">
+                      <span class="interesse-status-{{ interesse.status|lower }}">{{ interesse.status|title }}</span>
+                      {% if interesse.status == 'PENDENTE' %}
+                        <div class="interesse-acoes">
+                          <form
+                            action="{% url 'core:aceitar_interesse' interesse.pk %}"
+                            method="post"
+                          >
+                            {% csrf_token %}
+                            <button type="submit" class="botao botao-principal">
+                              Aceitar
+                            </button>
+                          </form>
 
+                          <form
+                            action="{% url 'core:recusar_interesse' interesse.pk %}"
+                            method="post"
+                          >
+                            {% csrf_token %}
+                            <button type="submit" class="botao botao-perigo">
+                              Recusar
+                            </button>
+                          </form>
+                        </div>
+                      {% endif %}
                   </div>
 
                 {% endfor %}

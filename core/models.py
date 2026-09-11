@@ -23,6 +23,11 @@ class Livro(models.Model):
         return self.titulo
     
 class Interesse(models.Model):
+    class Status(models.TextChoices):
+        PENDENTE = 'PENDENTE', 'Pendente'
+        ACEITO = 'ACEITO', 'Aceito'
+        RECUSADO = 'RECUSADO', 'Recusado'
+
     livro = models.ForeignKey(
         Livro,
         on_delete=models.PROTECT,
@@ -33,6 +38,13 @@ class Interesse(models.Model):
         on_delete=models.PROTECT,
         related_name='interesses_em_livros',
     )
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDENTE,
+    )
+
     data_interesse = models.DateTimeField(auto_now_add=True)
 
     class Meta:

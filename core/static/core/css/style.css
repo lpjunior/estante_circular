@@ -399,11 +399,9 @@ button {
     padding: 80px 0;
 
     background:
-        linear-gradient(
-            135deg,
+        linear-gradient(135deg,
             var(--cor-superficie-suave),
-            var(--cor-fundo)
-        );
+            var(--cor-fundo));
 }
 
 
@@ -429,7 +427,7 @@ button {
 }
 
 
-.hero-texto > p {
+.hero-texto>p {
     max-width: 640px;
 
     margin-bottom: 32px;
@@ -718,7 +716,7 @@ button {
 }
 
 
-.login-apresentacao > p {
+.login-apresentacao>p {
     max-width: 560px;
 
     color: var(--cor-texto-suave);
@@ -840,7 +838,7 @@ button {
 }
 
 
-.disponibilizar-apresentacao > p {
+.disponibilizar-apresentacao>p {
     max-width: 580px;
 
     color: var(--cor-texto-suave);
@@ -924,7 +922,7 @@ button {
 }
 
 
-.confirmacao-livro > p {
+.confirmacao-livro>p {
     margin: 0;
 
     color: var(--cor-texto-secundario);
@@ -1152,11 +1150,9 @@ button {
     place-items: center;
 
     background:
-        linear-gradient(
-            145deg,
+        linear-gradient(145deg,
             #dbe8de,
-            #c7dbcc
-        );
+            #c7dbcc);
 
     border: 1px solid #bdd0c2;
     border-radius: 20px;
@@ -1393,8 +1389,8 @@ button {
     gap: 2px;
 }
 
-.acoes-responsavel-texto > strong,
-.acoes-login > div > strong {
+.acoes-responsavel-texto>strong,
+.acoes-login>div>strong {
     color: var(--cor-verde-escuro);
 }
 
@@ -1553,7 +1549,7 @@ button {
     border-radius: var(--raio-medio);
 }
 
-.interesses-vazio > span {
+.interesses-vazio>span {
     font-size: 1.8rem;
 }
 
@@ -1661,6 +1657,256 @@ button {
 
     .interesse-item {
         align-items: flex-start;
+    }
+
+}
+
+/* Status de interesse */
+.interesse-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+.interesse-dados {
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+.interesse-status {
+    flex-shrink: 0;
+}
+
+.status-interesse {
+    display: inline-block;
+
+    padding: 6px 12px;
+
+    border-radius: 999px;
+
+    font-size: 0.78rem;
+    font-weight: 800;
+
+    text-transform: uppercase;
+}
+
+.status-pendente {
+    background-color: #fff5e5;
+    color: #8a5700;
+}
+
+.status-recusado {
+    background-color: #fdecec;
+    color: #a22d2d;
+}
+
+.interesse-acoes {
+    display: flex;
+
+    gap: 8px;
+
+    margin-top: 10px;
+}
+
+.interesse-acoes form {
+    flex: 0;
+}
+
+@media (max-width: 700px) {
+    .interesse-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .interesse-acoes {
+        width: 100%;
+
+        flex-direction: column;
+    }
+
+    .interesse-acoes form,
+    .interesse-acoes .botao {
+        width: 100%;
+    }
+}
+
+/* ---------- MEUS INTERESSES ---------- */
+
+.pagina-meus-interesses {
+    min-height: calc(100vh - 150px);
+
+    padding: 72px 0;
+}
+
+
+.meus-interesses-cabecalho {
+    max-width: 720px;
+
+    margin-bottom: 40px;
+}
+
+
+.meus-interesses-cabecalho h1 {
+    margin: 14px 0;
+
+    color: var(--cor-verde-escuro);
+
+    font-size: 3rem;
+    line-height: 1.1;
+}
+
+
+.meus-interesses-cabecalho p {
+    margin-bottom: 0;
+
+    color: var(--cor-texto-suave);
+
+    font-size: 1.1rem;
+}
+
+
+.lista-meus-interesses {
+    display: grid;
+
+    gap: 20px;
+}
+
+
+.card-meu-interesse {
+    padding: 26px;
+
+    background-color: var(--cor-superficie);
+
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-grande);
+
+    box-shadow: var(--sombra-card);
+}
+
+
+.meu-interesse-conteudo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 24px;
+}
+
+
+.meu-interesse-conteudo h2 {
+    margin: 6px 0 2px;
+
+    color: var(--cor-verde);
+
+    font-size: 1.4rem;
+}
+
+
+.meu-interesse-autor {
+    margin: 0;
+
+    color: var(--cor-texto-suave);
+}
+
+
+.meu-interesse-informacoes {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 32px;
+
+    margin-top: 20px;
+    padding-top: 18px;
+
+    border-top: 1px solid var(--cor-borda);
+}
+
+
+.meu-interesse-informacoes div {
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.meu-interesse-informacoes span {
+    color: var(--cor-texto-secundario);
+
+    font-size: 0.78rem;
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+
+.meu-interesse-informacoes strong {
+    color: var(--cor-texto);
+}
+
+
+.meu-interesse-situacao {
+    margin-top: 20px;
+
+    padding: 14px 16px;
+
+    background-color: var(--cor-superficie-suave);
+
+    border-radius: var(--raio-pequeno);
+}
+
+
+.meu-interesse-situacao p {
+    margin: 0;
+
+    color: var(--cor-texto-suave);
+}
+
+
+.texto-interesse-aceito {
+    color: var(--cor-verde) !important;
+
+    font-weight: 600;
+}
+
+
+.texto-interesse-recusado {
+    color: #a22d2d !important;
+
+    font-weight: 600;
+}
+
+
+.meu-interesse-acoes {
+    margin-top: 20px;
+}
+
+
+@media (max-width: 700px) {
+
+    .meus-interesses-cabecalho h1 {
+        font-size: 2.3rem;
+    }
+
+
+    .meu-interesse-conteudo {
+        flex-direction: column;
+    }
+
+
+    .meu-interesse-informacoes {
+        flex-direction: column;
+
+        gap: 14px;
+    }
+
+
+    .meu-interesse-acoes .botao {
+        width: 100%;
     }
 
 }
