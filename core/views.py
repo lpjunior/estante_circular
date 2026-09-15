@@ -1,13 +1,14 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
+from django.views.decorators.http import require_POST
 
-from core.models import Interesse, Livro
+from core.models import Interesse, Livro, Reserva
 
 from .forms import LivroForm
 
@@ -171,12 +172,21 @@ def detalhes_livro(request: HttpRequest, id: int) -> HttpResponse:
 
     interesses = []
 
-    if (request.user.is_authenticated and livro.responsavel == request.user):
-        interesses = livro.interesses.select_related("interessado").order_by("-data_interesse") # type: ignore
+    if request.user.is_authenticated and livro.responsavel == request.user:
+        interesses = livro.interesses.select_related("interessado").order_by( # type: ignore
+            "-data_interesse"
+        )
+
+    reserva_ativa = (
+        Reserva.objects.filter(interesse__livro=livro, status=Reserva.Status.ATIVA)
+        .select_related("interesse", "interesse__interessado")
+        .first()
+    )
 
     contexto = {
         "livro": livro,
         "interesses": interesses,
+        "reserva_ativa": reserva_ativa,
     }
 
     return render(
@@ -264,10 +274,18 @@ def meus_livros(request: HttpRequest) -> HttpResponse:
         request=request, template_name="core/meus_livros.html", context=contexto
     )
 
+
 @login_required
 @require_POST
 def demonstrar_interesse(request: HttpRequest, id: int) -> HttpResponse:
     livro = get_object_or_404(Livro, pk=id, ativo=True)
+
+    if livro.situacao != Livro.Situacao.DISPONIVEL:
+        messages.warning(
+            request=request,
+            message="Este livro não está disponível para novos de interesses.",
+        )
+        return redirect("core:detalhes_livro", id=livro.pk)
 
     if livro.responsavel == request.user:
         messages.error(
@@ -294,17 +312,14 @@ def demonstrar_interesse(request: HttpRequest, id: int) -> HttpResponse:
 
     return redirect("core:detalhes_livro", id=livro.pk)
 
+
 @login_required
 @require_POST
 def aceitar_interesse(request: HttpRequest, id: int) -> HttpResponse:
 
     # Recupera o interesse pelo ID, garantindo que o livro e os usuários relacionados sejam carregados para evitar consultas adicionais ao banco de dados.
     interesse = get_object_or_404(
-        Interesse.objects.select_related(
-            "livro", 
-            "livro__responsavel", 
-            "interessado"
-        ),
+        Interesse.objects.select_related("livro", "livro__responsavel", "interessado"),
         pk=id,
     )
 
@@ -319,12 +334,10 @@ def aceitar_interesse(request: HttpRequest, id: int) -> HttpResponse:
             message="Este interesse já foi processado.",
         )
         return redirect("core:detalhes_livro", id=interesse.livro.pk)
-    
+
     interesse.status = Interesse.Status.ACEITO
 
-    interesse.save(
-        update_fields=["status"]
-    )
+    interesse.save(update_fields=["status"])
 
     messages.success(
         request=request,
@@ -333,15 +346,12 @@ def aceitar_interesse(request: HttpRequest, id: int) -> HttpResponse:
 
     return redirect("core:detalhes_livro", id=interesse.livro.pk)
 
+
 @login_required
 @require_POST
 def recusar_interesse(request: HttpRequest, id: int) -> HttpResponse:
     interesse = get_object_or_404(
-        Interesse.objects.select_related(
-            "livro", 
-            "livro__responsavel", 
-            "interessado"
-        ),
+        Interesse.objects.select_related("livro", "livro__responsavel", "interessado"),
         pk=id,
     )
 
@@ -354,12 +364,10 @@ def recusar_interesse(request: HttpRequest, id: int) -> HttpResponse:
             message="Este interesse já foi processado.",
         )
         return redirect("core:detalhes_livro", id=interesse.livro.pk)
-    
+
     interesse.status = Interesse.Status.RECUSADO
 
-    interesse.save(
-        update_fields=["status"]
-    )
+    interesse.save(update_fields=["status"])
 
     messages.success(
         request=request,
@@ -368,14 +376,16 @@ def recusar_interesse(request: HttpRequest, id: int) -> HttpResponse:
 
     return redirect("core:detalhes_livro", id=interesse.livro.pk)
 
+
 @login_required
 def meus_interesses(request: HttpRequest) -> HttpResponse:
-    interesses = Interesse.objects.filter(
-        interessado=request.user
-    ).select_related(
-        "livro", 
-        "livro__responsavel"
-    ).order_by("-data_interesse")
+    interesses = (
+        Interesse.objects
+        .filter(interessado=request.user)
+        .select_related("livro", "livro__responsavel")
+        .prefetch_related("reservas",)
+        .order_by("-data_interesse")
+    )
 
     # O contexto é um dicionário que contém os dados que serão passados para o template. Neste caso, estamos passando a lista de interesses do usuário logado.
     contexto = {
@@ -385,6 +395,107 @@ def meus_interesses(request: HttpRequest) -> HttpResponse:
     return render(
         request=request, template_name="core/meus_interesses.html", context=contexto
     )
+
+
+@login_required
+@require_POST
+def reservar_livro(request: HttpRequest, id: int) -> HttpResponse:
+    interesse = get_object_or_404(
+        Interesse.objects.select_related("livro", "livro__responsavel", "interessado"),
+        pk=id,
+    )
+
+    if interesse.livro.responsavel != request.user:
+        raise PermissionDenied("Você não tem permissão para reservar este livro.")
+
+    if interesse.status != Interesse.Status.ACEITO:
+        messages.warning(
+            request=request,
+            message="Somente interesses aceitos podem ser reservados.",
+        )
+        return redirect("core:detalhes_livro", id=interesse.livro.pk)
+
+    if not interesse.livro.ativo:
+        messages.warning(
+            request=request,
+            message="Este livro não está mais disponível para reserva.",
+        )
+        return redirect("core:detalhes_livro", id=interesse.livro.pk)
+
+    if interesse.livro.situacao != Livro.Situacao.DISPONIVEL:
+        messages.warning(
+            request=request,
+            message="Este livro já está reservado ou emprestado e não pode ser reservado novamente.",
+        )
+        return redirect("core:detalhes_livro", id=interesse.livro.pk)
+
+    reserva_ativa = Reserva.objects.filter(
+        interesse__livro=interesse.livro, status=Reserva.Status.ATIVA
+    ).exists()
+
+    if reserva_ativa:
+        messages.info(
+            request=request,
+            message="Você já possui uma reserva ativa para este livro.",
+        )
+
+        return redirect("core:detalhes_livro", id=interesse.livro.pk)
+
+    Reserva.objects.create(
+        interesse=interesse,
+    )
+
+    interesse.livro.situacao = Livro.Situacao.RESERVADO
+    interesse.livro.save(update_fields=["situacao"])
+
+    messages.success(
+        request=request,
+        message=f"Reserva do livro '{interesse.livro.titulo}' realizada com sucesso.",
+    )
+
+    return redirect("core:detalhes_livro", id=interesse.livro.pk)
+
+
+@login_required
+@require_POST
+def cancelar_reserva(request: HttpRequest, id: int) -> HttpResponse:
+    reserva = get_object_or_404(
+        Reserva.objects.select_related(
+            "interesse",
+            "interesse__livro",
+            "interesse__livro__responsavel",
+            "interesse__interessado",
+        ),
+        pk=id,
+    )
+
+    if request.user not in (
+        reserva.interesse.interessado,
+        reserva.interesse.livro.responsavel,
+    ):
+        raise PermissionDenied("Você não tem permissão para cancelar esta reserva.")
+
+    if reserva.status != Reserva.Status.ATIVA:
+        messages.warning(
+            request=request,
+            message="Está reserva não está ativa.",
+        )
+        return redirect("core:detalhes_livro", id=reserva.interesse.livro.pk)
+
+    reserva.status = Reserva.Status.CANCELADA
+    reserva.encerrada_em = timezone.now()
+    reserva.save(update_fields=["status", "encerrada_em"])
+
+    reserva.interesse.livro.situacao = Livro.Situacao.DISPONIVEL
+    reserva.interesse.livro.save(update_fields=["situacao"])
+
+    messages.success(
+        request=request,
+        message=f"Reserva do livro '{reserva.interesse.livro.titulo}' cancelada com sucesso.",
+    )
+
+    return redirect("core:detalhes_livro", id=reserva.interesse.livro.pk)
+
 
 # =========================================================
 # TRATAMENTO DE ERROS

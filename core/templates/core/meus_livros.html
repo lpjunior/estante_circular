@@ -1,177 +1,264 @@
 {% extends 'core/base.html' %}
 
-
 {% block title %}
-    Meus Livros | Estante Circular
+  Meus Livros | Estante Circular
 {% endblock %}
-
 
 {% block content %}
 
 <section class="pagina-meus-livros">
 
-    <div class="container">
+  <div class="container">
 
-        <div class="meus-livros-cabecalho">
+    <!-- CABEÇALHO -->
+    <header class="meus-livros-cabecalho">
 
-            <div>
+      <div class="meus-livros-cabecalho-texto">
 
-                <span class="etiqueta">
-                    Minha estante
+        <span class="etiqueta">
+          Minha estante
+        </span>
+
+        <h1>
+          Meus livros
+        </h1>
+
+        <p>
+          Acompanhe e gerencie os livros que você disponibilizou
+          na Estante Circular.
+        </p>
+
+      </div>
+
+      <a
+        href="{% url 'core:disponibilizar_livro' %}"
+        class="botao botao-principal"
+      >
+        Disponibilizar novo livro
+      </a>
+
+    </header>
+
+
+    {% if livros %}
+
+      <!-- LISTA DE LIVROS -->
+      <div class="grade-meus-livros">
+
+        {% for livro in livros %}
+
+          <article
+            class="card-meu-livro{% if not livro.ativo %} card-meu-livro-inativo{% endif %}"
+          >
+
+            <!-- CABEÇALHO DO CARD -->
+            <div class="meu-livro-cabecalho">
+
+              <div class="meu-livro-identificacao">
+
+                <span class="genero">
+                  {{ livro.genero }}
                 </span>
 
-                <h1>
-                    Meus livros
-                </h1>
-
-                <p>
-                    Acompanhe os livros que você
-                    disponibilizou na Estante Circular.
-                </p>
-
-            </div>
-
-
-            <a
-                href="{% url 'core:disponibilizar_livro' %}"
-                class="botao botao-principal"
-            >
-                Disponibilizar novo livro
-            </a>
-
-        </div>
-
-
-        {% if livros %}
-
-            <div class="grade-meus-livros">
-
-                {% for livro in livros %}
-
-                    <article class="card-meu-livro">
-
-                        <div class="meu-livro-cabecalho">
-
-                            <div>
-
-                                <span class="genero">
-                                    {{ livro.genero }}
-                                </span>
-
-                                <h2>
-                                    {{ livro.titulo }}
-                                </h2>
-
-                                <p>
-                                    {{ livro.autor }}
-                                </p>
-
-                            </div>
-
-
-                            {% if livro.ativo %}
-
-                                <span class="status-livro status-ativo">
-                                    Ativo
-                                </span>
-
-                            {% else %}
-
-                                <span class="status-livro status-inativo">
-                                    Inativo
-                                </span>
-
-                            {% endif %}
-
-                        </div>
-
-
-                        <div class="meu-livro-informacoes">
-
-                            <div>
-
-                                <span>
-                                    Estado
-                                </span>
-
-                                <strong>
-                                    {{ livro.estado_conservacao }}
-                                </strong>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="meu-livro-acoes">
-
-                            {% if livro.ativo %}
-
-                                <a
-                                    href="{% url 'core:detalhes_livro' livro.pk %}"
-                                    class="botao botao-secundario"
-                                >
-                                    Ver detalhes
-                                </a>
-
-
-                                <a
-                                    href="{% url 'core:editar_livro' livro.pk %}"
-                                    class="botao botao-secundario"
-                                >
-                                    Editar
-                                </a>
-
-
-                                <a
-                                    href="{% url 'core:excluir_livro' livro.pk %}"
-                                    class="botao botao-perigo"
-                                >
-                                    Remover
-                                </a>
-
-                            {% else %}
-
-                                <span class="texto-livro-inativo">
-                                    Este livro foi removido do catálogo.
-                                </span>
-
-                            {% endif %}
-
-                        </div>
-
-                    </article>
-
-                {% endfor %}
-
-            </div>
-
-        {% else %}
-
-            <div class="nenhum-resultado">
-
                 <h2>
-                    Nenhum livro disponibilizado
+                  {{ livro.titulo }}
                 </h2>
 
-                <p>
-                    Você ainda não possui livros
-                    cadastrados na Estante Circular.
+                <p class="meu-livro-autor">
+                  {{ livro.autor }}
                 </p>
 
+              </div>
 
-                <a
-                    href="{% url 'core:disponibilizar_livro' %}"
-                    class="botao botao-principal"
-                >
-                    Disponibilizar meu primeiro livro
-                </a>
+
+              {% if livro.ativo %}
+
+                <span class="status-livro status-ativo">
+                  Ativo
+                </span>
+
+              {% else %}
+
+                <span class="status-livro status-inativo">
+                  Inativo
+                </span>
+
+              {% endif %}
 
             </div>
 
-        {% endif %}
 
-    </div>
+            <!-- INFORMAÇÕES -->
+            <div class="meu-livro-informacoes">
+
+              <div>
+                <span>
+                  Estado de conservação
+                </span>
+
+                <strong>
+                  {{ livro.estado_conservacao }}
+                </strong>
+              </div>
+
+
+              <div>
+                <span>
+                  Situação
+                </span>
+
+                <strong>
+                  {{ livro.get_situacao_display }}
+                </strong>
+              </div>
+
+            </div>
+
+
+            <!-- SITUAÇÃO DO LIVRO -->
+            {% if livro.ativo %}
+
+              {% if livro.situacao == livro.Situacao.DISPONIVEL %}
+
+                <div class="meu-livro-situacao situacao-livro-disponivel">
+
+                  <div class="situacao-livro-icone">
+                    ✓
+                  </div>
+
+                  <div>
+                    <strong>
+                      Disponível para circulação
+                    </strong>
+
+                    <p>
+                      Este livro está disponível para receber
+                      novos interesses.
+                    </p>
+                  </div>
+
+                </div>
+
+              {% else %}
+
+                <div class="meu-livro-situacao situacao-livro-indisponivel">
+
+                  <div class="situacao-livro-icone">
+                    !
+                  </div>
+
+                  <div>
+                    <strong>
+                      Livro indisponível
+                    </strong>
+
+                    <p>
+                      Este livro não está disponível para
+                      novos interesses neste momento.
+                    </p>
+                  </div>
+
+                </div>
+
+              {% endif %}
+
+            {% else %}
+
+              <div class="meu-livro-situacao situacao-livro-inativo">
+
+                <div class="situacao-livro-icone">
+                  ×
+                </div>
+
+                <div>
+                  <strong>
+                    Livro removido do catálogo
+                  </strong>
+
+                  <p>
+                    Este livro permanece armazenado no sistema
+                    para manter o histórico, mas não aparece
+                    mais no catálogo.
+                  </p>
+                </div>
+
+              </div>
+
+            {% endif %}
+
+
+            <!-- AÇÕES -->
+            <div class="meu-livro-acoes">
+
+              {% if livro.ativo %}
+
+                <a
+                  href="{% url 'core:detalhes_livro' livro.pk %}"
+                  class="botao botao-secundario"
+                >
+                  Ver detalhes
+                </a>
+
+                <a
+                  href="{% url 'core:editar_livro' livro.pk %}"
+                  class="botao botao-secundario"
+                >
+                  Editar
+                </a>
+
+                <a
+                  href="{% url 'core:excluir_livro' livro.pk %}"
+                  class="botao botao-perigo"
+                >
+                  Remover
+                </a>
+
+              {% else %}
+
+                <span class="texto-livro-inativo">
+                  Este livro foi removido do catálogo.
+                </span>
+
+              {% endif %}
+
+            </div>
+
+          </article>
+
+        {% endfor %}
+
+      </div>
+
+    {% else %}
+
+      <!-- ESTADO VAZIO -->
+      <div class="nenhum-resultado">
+
+        <div class="nenhum-resultado-icone">
+          📚
+        </div>
+
+        <h2>
+          Nenhum livro disponibilizado
+        </h2>
+
+        <p>
+          Você ainda não possui livros cadastrados
+          na Estante Circular.
+        </p>
+
+        <a
+          href="{% url 'core:disponibilizar_livro' %}"
+          class="botao botao-principal"
+        >
+          Disponibilizar meu primeiro livro
+        </a>
+
+      </div>
+
+    {% endif %}
+
+  </div>
 
 </section>
 

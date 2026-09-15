@@ -1734,21 +1734,22 @@ button {
     }
 }
 
-/* ---------- MEUS INTERESSES ---------- */
+/* =========================================================
+   MEUS INTERESSES
+   ========================================================= */
 
 .pagina-meus-interesses {
     min-height: calc(100vh - 150px);
-
     padding: 72px 0;
 }
 
 
+/* ---------- CABEÇALHO ---------- */
+
 .meus-interesses-cabecalho {
     max-width: 720px;
-
     margin-bottom: 40px;
 }
-
 
 .meus-interesses-cabecalho h1 {
     margin: 14px 0;
@@ -1759,9 +1760,8 @@ button {
     line-height: 1.1;
 }
 
-
 .meus-interesses-cabecalho p {
-    margin-bottom: 0;
+    margin: 0;
 
     color: var(--cor-texto-suave);
 
@@ -1769,12 +1769,15 @@ button {
 }
 
 
+/* ---------- LISTA ---------- */
+
 .lista-meus-interesses {
     display: grid;
-
     gap: 20px;
 }
 
+
+/* ---------- CARD ---------- */
 
 .card-meu-interesse {
     padding: 26px;
@@ -1785,8 +1788,20 @@ button {
     border-radius: var(--raio-grande);
 
     box-shadow: var(--sombra-card);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
+.card-meu-interesse:hover {
+    transform: translateY(-2px);
+
+    box-shadow: var(--sombra-destaque);
+}
+
+
+/* ---------- CABEÇALHO DO CARD ---------- */
 
 .meu-interesse-conteudo {
     display: flex;
@@ -1796,6 +1811,9 @@ button {
     gap: 24px;
 }
 
+.meu-interesse-livro {
+    min-width: 0;
+}
 
 .meu-interesse-conteudo h2 {
     margin: 6px 0 2px;
@@ -1803,8 +1821,8 @@ button {
     color: var(--cor-verde);
 
     font-size: 1.4rem;
+    line-height: 1.25;
 }
-
 
 .meu-interesse-autor {
     margin: 0;
@@ -1812,6 +1830,48 @@ button {
     color: var(--cor-texto-suave);
 }
 
+
+/* ---------- STATUS ---------- */
+
+.status-interesse {
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 30px;
+
+    padding: 5px 12px;
+
+    border-radius: 999px;
+
+    font-size: 0.78rem;
+    font-weight: 800;
+
+    line-height: 1;
+
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.status-pendente {
+    background-color: #fff5e5;
+    color: #8a5700;
+}
+
+.status-aceito {
+    background-color: #e0eee5;
+    color: var(--cor-verde);
+}
+
+.status-recusado {
+    background-color: var(--cor-erro-fundo);
+    color: var(--cor-erro-texto);
+}
+
+
+/* ---------- INFORMAÇÕES ---------- */
 
 .meu-interesse-informacoes {
     display: flex;
@@ -1825,14 +1885,14 @@ button {
     border-top: 1px solid var(--cor-borda);
 }
 
+.meu-interesse-informacoes>div {
+    min-width: 180px;
 
-.meu-interesse-informacoes div {
     display: flex;
     flex-direction: column;
 
     gap: 2px;
 }
-
 
 .meu-interesse-informacoes span {
     color: var(--cor-texto-secundario);
@@ -1843,60 +1903,241 @@ button {
     text-transform: uppercase;
 }
 
-
 .meu-interesse-informacoes strong {
     color: var(--cor-texto);
 }
 
 
-.meu-interesse-situacao {
-    margin-top: 20px;
+/* ---------- SITUAÇÃO ---------- */
 
+.meu-interesse-situacao {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 12px;
+
+    margin-top: 20px;
     padding: 14px 16px;
 
-    background-color: var(--cor-superficie-suave);
-
-    border-radius: var(--raio-pequeno);
+    border: 1px solid transparent;
+    border-radius: var(--raio-medio);
 }
 
+.meu-interesse-situacao .situacao-icone {
+    width: 30px;
+    height: 30px;
+
+    flex: 0 0 30px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    font-weight: 800;
+}
+
+.meu-interesse-situacao strong {
+    display: block;
+
+    margin-bottom: 2px;
+
+    font-size: 0.95rem;
+}
 
 .meu-interesse-situacao p {
     margin: 0;
 
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+
+/* Pendente */
+
+.situacao-pendente {
+    background-color: #fffaf0;
+
+    border-color: #f2d7a5;
+}
+
+.situacao-pendente .situacao-icone {
+    background-color: #f6dfb5;
+    color: #8a5700;
+}
+
+.situacao-pendente strong,
+.situacao-pendente p {
+    color: #8a5700;
+}
+
+
+/* Aceito */
+
+.situacao-aceita {
+    background-color: var(--cor-superficie-suave);
+
+    border-color: #cbded0;
+}
+
+.situacao-aceita .situacao-icone {
+    background-color: #dce9df;
+    color: var(--cor-verde);
+}
+
+.situacao-aceita strong {
+    color: var(--cor-verde);
+}
+
+.situacao-aceita p {
     color: var(--cor-texto-suave);
 }
 
 
-.texto-interesse-aceito {
-    color: var(--cor-verde) !important;
+/* Recusado */
 
-    font-weight: 600;
+.situacao-recusada {
+    background-color: var(--cor-erro-fundo);
+
+    border-color: var(--cor-erro-borda);
+}
+
+.situacao-recusada .situacao-icone {
+    background-color: var(--cor-erro-borda);
+    color: var(--cor-erro-texto);
+}
+
+.situacao-recusada strong,
+.situacao-recusada p {
+    color: var(--cor-erro-texto);
 }
 
 
-.texto-interesse-recusado {
-    color: #a22d2d !important;
+/* ---------- RESERVA ---------- */
 
-    font-weight: 600;
+.meu-interesse-reserva {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 14px;
+
+    margin-top: 16px;
+    padding: 18px;
+
+    background-color: #fffaf0;
+
+    border: 1px solid #f2d7a5;
+    border-radius: var(--raio-medio);
 }
 
+.reserva-interesse-icone {
+    width: 38px;
+    height: 38px;
+
+    flex: 0 0 38px;
+
+    display: grid;
+    place-items: center;
+
+    background-color: #f6dfb5;
+    color: #8a5700;
+
+    border-radius: 50%;
+
+    font-weight: 800;
+}
+
+.reserva-interesse-conteudo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 5px;
+}
+
+.reserva-interesse-conteudo>strong {
+    color: var(--cor-verde-escuro);
+}
+
+.reserva-interesse-conteudo p {
+    margin: 0;
+
+    color: var(--cor-texto-suave);
+
+    font-size: 0.92rem;
+}
+
+
+/* ---------- AÇÕES ---------- */
 
 .meu-interesse-acoes {
+    display: flex;
+    align-items: center;
+
     margin-top: 20px;
+    padding-top: 18px;
+
+    border-top: 1px solid var(--cor-borda);
+}
+
+.texto-livro-inativo {
+    color: var(--cor-texto-secundario);
+
+    font-size: 0.9rem;
 }
 
 
+/* ---------- ESTADO VAZIO ---------- */
+
+.nenhum-resultado-icone {
+    width: 52px;
+    height: 52px;
+
+    display: grid;
+    place-items: center;
+
+    margin: 0 auto 16px;
+
+    background-color: var(--cor-superficie-suave);
+    color: var(--cor-verde);
+
+    border-radius: 50%;
+
+    font-size: 1.6rem;
+}
+
+.nenhum-resultado .botao {
+    margin-top: 22px;
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
 @media (max-width: 700px) {
+
+    .pagina-meus-interesses {
+        padding: 48px 0;
+    }
+
+    .meus-interesses-cabecalho {
+        margin-bottom: 32px;
+    }
 
     .meus-interesses-cabecalho h1 {
         font-size: 2.3rem;
     }
 
+    .card-meu-interesse {
+        padding: 20px;
+    }
 
     .meu-interesse-conteudo {
         flex-direction: column;
-    }
 
+        gap: 14px;
+    }
 
     .meu-interesse-informacoes {
         flex-direction: column;
@@ -1904,9 +2145,442 @@ button {
         gap: 14px;
     }
 
+    .meu-interesse-informacoes>div {
+        min-width: 0;
+    }
 
     .meu-interesse-acoes .botao {
         width: 100%;
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .meus-interesses-cabecalho h1 {
+        font-size: 2rem;
+    }
+
+    .card-meu-interesse {
+        padding: 18px;
+    }
+
+    .meu-interesse-situacao,
+    .meu-interesse-reserva {
+        padding: 14px;
+    }
+
+}
+
+/* =========================================================
+   MEUS LIVROS
+   ========================================================= */
+
+.pagina-meus-livros {
+    min-height: calc(100vh - 150px);
+    padding: 72px 0;
+}
+
+
+/* ---------- CABEÇALHO ---------- */
+
+.meus-livros-cabecalho {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 32px;
+
+    margin-bottom: 40px;
+}
+
+.meus-livros-cabecalho-texto {
+    max-width: 720px;
+}
+
+.meus-livros-cabecalho h1 {
+    margin: 14px 0;
+
+    color: var(--cor-verde-escuro);
+
+    font-size: 3rem;
+    line-height: 1.1;
+}
+
+.meus-livros-cabecalho p {
+    margin: 0;
+
+    color: var(--cor-texto-suave);
+
+    font-size: 1.1rem;
+}
+
+.meus-livros-cabecalho>.botao {
+    flex-shrink: 0;
+}
+
+
+/* ---------- GRADE ---------- */
+
+.grade-meus-livros {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 24px;
+}
+
+
+/* ---------- CARD ---------- */
+
+.card-meu-livro {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 26px;
+
+    background-color: var(--cor-superficie);
+
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-grande);
+
+    box-shadow: var(--sombra-card);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.card-meu-livro:hover {
+    transform: translateY(-2px);
+
+    box-shadow: var(--sombra-destaque);
+}
+
+.card-meu-livro-inativo {
+    background-color: #fafafa;
+
+    box-shadow: none;
+}
+
+.card-meu-livro-inativo:hover {
+    transform: none;
+
+    box-shadow: none;
+}
+
+
+/* ---------- CABEÇALHO DO CARD ---------- */
+
+.meu-livro-cabecalho {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+.meu-livro-identificacao {
+    min-width: 0;
+}
+
+.meu-livro-cabecalho h2 {
+    margin: 6px 0 2px;
+
+    color: var(--cor-verde);
+
+    font-size: 1.4rem;
+    line-height: 1.25;
+}
+
+.meu-livro-autor {
+    margin: 0;
+
+    color: var(--cor-texto-suave);
+}
+
+
+/* ---------- STATUS ATIVO / INATIVO ---------- */
+
+.status-livro {
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 30px;
+
+    padding: 5px 12px;
+
+    border-radius: 999px;
+
+    font-size: 0.78rem;
+    font-weight: 800;
+    line-height: 1;
+
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.status-ativo {
+    background-color: #e0eee5;
+    color: var(--cor-verde);
+}
+
+.status-inativo {
+    background-color: #eceff1;
+    color: var(--cor-texto-secundario);
+}
+
+
+/* ---------- INFORMAÇÕES ---------- */
+
+.meu-livro-informacoes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 20px;
+
+    margin-top: 20px;
+    padding-top: 18px;
+
+    border-top: 1px solid var(--cor-borda);
+}
+
+.meu-livro-informacoes>div {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+.meu-livro-informacoes span {
+    color: var(--cor-texto-secundario);
+
+    font-size: 0.78rem;
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+.meu-livro-informacoes strong {
+    color: var(--cor-texto);
+}
+
+
+/* ---------- SITUAÇÃO ---------- */
+
+.meu-livro-situacao {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 12px;
+
+    margin-top: 20px;
+    padding: 14px 16px;
+
+    border: 1px solid transparent;
+    border-radius: var(--raio-medio);
+}
+
+.situacao-livro-icone {
+    width: 30px;
+    height: 30px;
+
+    flex: 0 0 30px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    font-weight: 800;
+}
+
+.meu-livro-situacao strong {
+    display: block;
+
+    margin-bottom: 2px;
+
+    font-size: 0.95rem;
+}
+
+.meu-livro-situacao p {
+    margin: 0;
+
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+
+/* Livro disponível */
+
+.situacao-livro-disponivel {
+    background-color: var(--cor-superficie-suave);
+
+    border-color: #cbded0;
+}
+
+.situacao-livro-disponivel .situacao-livro-icone {
+    background-color: #dce9df;
+    color: var(--cor-verde);
+}
+
+.situacao-livro-disponivel strong {
+    color: var(--cor-verde);
+}
+
+.situacao-livro-disponivel p {
+    color: var(--cor-texto-suave);
+}
+
+
+/* Livro indisponível */
+
+.situacao-livro-indisponivel {
+    background-color: #fffaf0;
+
+    border-color: #f2d7a5;
+}
+
+.situacao-livro-indisponivel .situacao-livro-icone {
+    background-color: #f6dfb5;
+    color: #8a5700;
+}
+
+.situacao-livro-indisponivel strong,
+.situacao-livro-indisponivel p {
+    color: #8a5700;
+}
+
+
+/* Livro inativo */
+
+.situacao-livro-inativo {
+    background-color: #f5f6f6;
+
+    border-color: var(--cor-borda);
+}
+
+.situacao-livro-inativo .situacao-livro-icone {
+    background-color: #e5e8e9;
+    color: var(--cor-texto-secundario);
+}
+
+.situacao-livro-inativo strong {
+    color: var(--cor-texto-suave);
+}
+
+.situacao-livro-inativo p {
+    color: var(--cor-texto-secundario);
+}
+
+
+/* ---------- AÇÕES ---------- */
+
+.meu-livro-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: auto;
+    padding-top: 22px;
+}
+
+.meu-livro-acoes .botao {
+    flex: 1 1 auto;
+}
+
+.texto-livro-inativo {
+    color: var(--cor-texto-secundario);
+
+    font-size: 0.9rem;
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .grade-meus-livros {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .pagina-meus-livros {
+        padding: 48px 0;
+    }
+
+    .meus-livros-cabecalho {
+        flex-direction: column;
+        align-items: flex-start;
+
+        gap: 22px;
+
+        margin-bottom: 32px;
+    }
+
+    .meus-livros-cabecalho h1 {
+        font-size: 2.3rem;
+    }
+
+    .meus-livros-cabecalho>.botao {
+        width: 100%;
+    }
+
+    .card-meu-livro {
+        padding: 20px;
+    }
+
+    .meu-livro-cabecalho {
+        flex-direction: column;
+
+        gap: 14px;
+    }
+
+    .meu-livro-informacoes {
+        grid-template-columns: 1fr;
+
+        gap: 14px;
+    }
+
+    .meu-livro-acoes {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .meu-livro-acoes .botao {
+        width: 100%;
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .meus-livros-cabecalho h1 {
+        font-size: 2rem;
+    }
+
+    .card-meu-livro {
+        padding: 18px;
+    }
+
+    .meu-livro-situacao {
+        padding: 14px;
     }
 
 }

@@ -76,4 +76,14 @@ urlpatterns = [
         views.meus_interesses,
         name='meus_interesses'
     ),
+    path(
+        'interesses/<int:id>/reservar/',
+        views.reservar_livro,
+        name='reservar_livro',
+    ),
+    path(
+        'reservas/<int:id>/cancelar/',
+        views.cancelar_reserva,
+        name='cancelar_reserva',
+    ),
 ]
