@@ -1,155 +1,55 @@
 {% extends 'core/base.html' %}
-
-
-{% block title %}
-Criar Conta | Estante Circular
-{% endblock %}
-
-
+{% block title %}Criar conta | Estante Circular{% endblock %}
 {% block content %}
-
-<section class="pagina-login">
-
-    <div class="container login-container">
-
-        <div class="login-apresentacao">
-
-            <span class="etiqueta">
-                Faça parte da comunidade
-            </span>
-
-            <h1>
-                Crie sua conta na Estante Circular
-            </h1>
-
-            <p>
-                Cadastre-se para participar da comunidade,
-                disponibilizar livros e acompanhar as
-                oportunidades de novas leituras.
-            </p>
-
-            <div class="aviso-login">
-
-                <strong>
-                    Sua conta na Estante Circular
-                </strong>
-
-                <p>
-                    Utilize um e-mail válido e uma senha
-                    que você consiga lembrar. Esses dados
-                    serão utilizados posteriormente para
-                    acessar sua conta.
-                </p>
-
+<section class="pagina">
+    <div class="container layout-formulario layout-autenticacao">
+        <div class="painel-contexto">
+            <span class="etiqueta">Faça parte</span>
+            <h1>Crie sua conta</h1>
+            <p>Participe da comunidade, compartilhe exemplares e descubra novas leituras.</p>
+            <div class="informacao-destaque">
+                <strong>Já possui uma conta?</strong>
+                <p>Acesse seu perfil e continue de onde parou.</p>
+                <a href="{% url 'core:login' %}" class="link-destaque">Entrar</a>
             </div>
-
         </div>
 
-
-        <div class="card-login">
-
-            <h2>
-                Criar conta
-            </h2>
-
-            <p class="texto-apoio">
-                Preencha seus dados para se cadastrar.
-            </p>
-
-
-            {% if erro %}
-
-            <div class="mensagem-erro" role="alert">
-                {{ erro }}
+        <div class="card-formulario">
+            <div class="cabecalho-formulario">
+                <h2>Dados de acesso</h2>
+                <p>Informe seus dados para criar sua conta.</p>
             </div>
 
-            {% endif %}
-
+            {% if erro %}<div class="mensagem-erro" role="alert">{{ erro }}</div>{% endif %}
 
             <form method="post">
-
                 {% csrf_token %}
-
-
-                <div class="campo">
-
-                    <label for="nome">
-                        Nome
-                    </label>
-
-                    <input type="text" id="nome" name="nome" placeholder="Digite seu nome" required>
-
+                <div class="grade-campos">
+                    <div class="campo">
+                        <label for="nome">Nome</label>
+                        <input type="text" id="nome" name="nome" value="{{ dados.nome }}" autocomplete="given-name" required>
+                    </div>
+                    <div class="campo">
+                        <label for="sobrenome">Sobrenome</label>
+                        <input type="text" id="sobrenome" name="sobrenome" value="{{ dados.sobrenome }}" autocomplete="family-name" required>
+                    </div>
                 </div>
-
-
                 <div class="campo">
-
-                    <label for="sobrenome">
-                        Sobrenome
-                    </label>
-
-                    <input type="text" id="sobrenome" name="sobrenome" placeholder="Digite seu sobrenome" required>
-
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" value="{{ dados.email }}" placeholder="seu@email.com" autocomplete="email" required>
                 </div>
-
-
                 <div class="campo">
-
-                    <label for="email">
-                        E-mail
-                    </label>
-
-                    <input type="email" id="email" name="email" placeholder="seu@email.com" required>
-
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" autocomplete="new-password" required>
+                    <small class="ajuda-campo">Use uma senha forte e evite informações pessoais óbvias.</small>
                 </div>
-
-
                 <div class="campo">
-
-                    <label for="senha">
-                        Senha
-                    </label>
-
-                    <input type="password" id="senha" name="senha" placeholder="Crie uma senha" required>
-
+                    <label for="confirmar_senha">Confirmar senha</label>
+                    <input type="password" id="confirmar_senha" name="confirmar_senha" autocomplete="new-password" required>
                 </div>
-
-
-                <div class="campo">
-
-                    <label for="confirmar_senha">
-                        Confirmar senha
-                    </label>
-
-                    <input type="password" id="confirmar_senha" name="confirmar_senha"
-                        placeholder="Digite novamente sua senha" required>
-
-                </div>
-
-
-                <button type="submit" class="botao botao-principal botao-login">
-                    Criar conta
-                </button>
-
+                <button type="submit" class="botao botao-principal botao-largura-total">Criar conta</button>
             </form>
-
-
-            <div class="login-cadastro">
-
-                <p>
-                    Já possui uma conta?
-                </p>
-
-                <a href="{% url 'core:login' %}" class="botao botao-secundario">
-                    Entrar
-                </a>
-
-            </div>
-
         </div>
-
     </div>
-
 </section>
-
 {% endblock %}

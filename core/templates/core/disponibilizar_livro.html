@@ -1,105 +1,36 @@
 {% extends 'core/base.html' %}
-
-{% block title %}
-  Disponibilizar Livro | Estante Circular
-{% endblock %}
-
+{% block title %}Disponibilizar livro | Estante Circular{% endblock %}
 {% block content %}
-  <section class="pagina-disponibilizar">
-    <div class="container disponibilizar-container">
-      <div class="disponibilizar-apresentacao">
-        <span class="etiqueta">Compartilhe uma leitura</span>
-
-        <h1>Disponibilizar um livro</h1>
-
-        <p>Tem um livro parado na sua estante? Disponibilize-o para que outra pessoa possa continuar essa história.</p>
-
-        <div class="informacao-destaque">
-          <strong>Nesta etapa do projeto</strong>
-
-          <p>Os dados enviados ainda não serão armazenados em banco de dados. Estamos praticando o envio e o processamento de informações utilizando POST.</p>
+<section class="pagina">
+    <div class="container layout-formulario">
+        <div class="painel-contexto">
+            <span class="etiqueta">Nova publicação</span>
+            <h1>Disponibilize um livro</h1>
+            <p>Inclua as informações essenciais para que outros leitores conheçam o exemplar e possam demonstrar interesse.</p>
+            <div class="informacao-destaque">
+                <strong>Responsável</strong>
+                <p>O livro ficará vinculado à sua conta e poderá ser gerenciado em “Meus livros”.</p>
+            </div>
         </div>
-      </div>
 
-      <div class="card-disponibilizar">
-          <div class="cabecalho-formulario">
-            <h2>Dados do livro</h2>
-
-            <p>Preencha as informações abaixo.</p>
-          </div>
-
-          <form method="post">
-            {% csrf_token %}
-
-            <div class="campo">
-              <label for="{{ form.titulo.id_for_label }}">{{ form.titulo.label }}</label>
-
-              {{ form.titulo }}
-
-              {% for erro in form.titulo.errors %}
-                <span class="erro-campo">
-                  {{ erro }}
-                </span>
-              {% endfor %}
+        <div class="card-formulario">
+            <div class="cabecalho-formulario">
+                <h2>Informações do exemplar</h2>
+                <p>Todos os campos abaixo são obrigatórios.</p>
             </div>
-
-            <div class="campo">
-              <label for="{{ form.autor.id_for_label }}">{{ form.autor.label }}</label>
-
-              {{ form.autor }}
-
-              {% for erro in form.autor.errors %}
-                <span class="erro-campo">
-                  {{ erro }}
-                </span>
-              {% endfor %}
-            </div>
-
-            <div class="campo">
-              <label for="{{ form.genero.id_for_label }}">{{ form.genero.label }}</label>
-
-              {{ form.genero }}
-
-              {% for erro in form.genero.errors %}
-                <span class="erro-campo">
-                  {{ erro }}
-                </span>
-              {% endfor %}
-            </div>
-
-            <div class="campo">
-              <label for="{{ form.estado_conservacao.id_for_label }}">{{ form.estado_conservacao.label }}</label>
-
-              {{ form.estado_conservacao }}
-
-              {% for erro in form.estado_conservacao.errors %}
-                <span class="erro-campo">
-                  {{ erro }}
-                </span>
-              {% endfor %}
-            </div>
-
-            <div class="campo">
-              <label for="{{ form.descricao.id_for_label }}">{{ form.descricao.label }}</label>
-
-              {{ form.descricao }}
-
-              {% for erro in form.descricao.errors %}
-                <span class="erro-campo">
-                  {{ erro }}
-                </span>
-              {% endfor %}
-            </div>
-
-            <div class="campo">
-              <label for="responsavel">Disponbilizado por</label>
-
-              <input type="text" id="responsavel" value="{{ user.get_full_name }}" readonly />
-            </div>
-
-            <button type="submit" class="botao botao-principal botao-formulario">Disponibilizar livro</button>
-          </form>
-      </div>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% include 'core/partials/form_livro.html' %}
+                <div class="campo">
+                    <label for="responsavel">Disponibilizado por</label>
+                    <input type="text" id="responsavel" value="{% if request.user.get_full_name %}{{ request.user.get_full_name }}{% else %}{{ request.user.username }}{% endif %}" readonly>
+                </div>
+                <div class="acoes-formulario">
+                    <button type="submit" class="botao botao-principal">Publicar no catálogo</button>
+                    <a href="{% url 'core:meus_livros' %}" class="botao botao-secundario">Cancelar</a>
+                </div>
+            </form>
+        </div>
     </div>
-  </section>
+</section>
 {% endblock %}

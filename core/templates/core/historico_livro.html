@@ -1,0 +1,67 @@
+{% extends 'core/base.html' %}
+{% block title %}Histórico de {{ livro.titulo }} | Estante Circular{% endblock %}
+{% block content %}
+<section class="pagina">
+    <div class="container">
+        <a href="{% url 'core:meus_livros' %}" class="link-voltar">Voltar para meus livros</a>
+
+        <header class="cabecalho-pagina">
+            <span class="etiqueta">Histórico de circulação</span>
+            <h1>{{ livro.titulo }}</h1>
+            <p>Registro das manifestações de interesse, reservas e empréstimos deste exemplar.</p>
+        </header>
+
+        <div class="historico-resumo">
+            <div><span>Autor</span><strong>{{ livro.autor }}</strong></div>
+            <div><span>Situação atual</span><strong>{{ livro.get_situacao_display }}</strong></div>
+            <div><span>Registro</span><strong>{% if livro.ativo %}Ativo{% else %}Inativo{% endif %}</strong></div>
+        </div>
+
+        {% if interesses %}
+            <div class="timeline">
+                {% for interesse in interesses %}
+                    <article class="timeline-item">
+                        <div class="timeline-marcador"></div>
+                        <div class="timeline-card">
+                            <div class="timeline-topo">
+                                <div>
+                                    <span class="etiqueta">Interesse</span>
+                                    <h2>{% if interesse.interessado.get_full_name %}{{ interesse.interessado.get_full_name }}{% else %}{{ interesse.interessado.username }}{% endif %}</h2>
+                                    <p>{{ interesse.data_interesse|date:"d/m/Y H:i" }}</p>
+                                </div>
+                                <span class="status-interesse status-{{ interesse.status|lower }}">{{ interesse.get_status_display }}</span>
+                            </div>
+
+                            {% for reserva in interesse.reservas.all %}
+                                <div class="historico-evento">
+                                    <div>
+                                        <strong>Reserva, {{ reserva.get_status_display }}</strong>
+                                        <span>Solicitada em {{ reserva.data_reserva|date:"d/m/Y H:i" }}</span>
+                                        <span>Retirada prevista para {{ reserva.data_retirada_prevista|date:"d/m/Y" }}</span>
+                                        {% if reserva.data_encerramento %}<span>Encerrada em {{ reserva.data_encerramento|date:"d/m/Y H:i" }}</span>{% endif %}
+                                    </div>
+
+                                    {% if reserva.emprestimo %}
+                                        <div class="historico-evento-interno">
+                                            <strong>Empréstimo, {{ reserva.emprestimo.get_status_display }}</strong>
+                                            <span>Iniciado em {{ reserva.emprestimo.emprestado_em|date:"d/m/Y H:i" }}</span>
+                                            {% if reserva.emprestimo.devolvido_em %}<span>Devolvido em {{ reserva.emprestimo.devolvido_em|date:"d/m/Y H:i" }}</span>{% endif %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% empty %}
+                                <div class="historico-evento historico-evento-vazio">Nenhuma reserva vinculada a este interesse.</div>
+                            {% endfor %}
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="estado-vazio">
+                <h2>Ainda não há histórico de circulação</h2>
+                <p>Os eventos deste exemplar aparecerão aqui conforme ocorrerem.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,94 +1,94 @@
 from django import forms
+from django.utils import timezone
 
-from core.models import Livro
+from core.models import Livro, Reserva
 
 
 class LivroForm(forms.ModelForm):
-    GENEROS = (
-        ("fantasia", "Fantasia"),
-        ("ficcao", "Ficção"),
-        ("romance", "Romance"),
-        ("terror", "Terror"),
-        ("suspense", "Suspense"),
-        ("aventura", "Aventura"),
-        ("biografia", "Biografia"),
-        ("literatura_brasileira", "Literatura Brasileira"),
-        ("outros", "Outros"),
+    GENEROS = tuple(Livro.GENERO_LABELS.items())
+    ESTADOS_CONSERVACAO = tuple(Livro.ESTADO_CONSERVACAO_LABELS.items())
+
+    genero = forms.ChoiceField(
+        choices=GENEROS,
+        label="Gênero ou categoria",
     )
-
-    ESTADO_CONSERVACAO = (
-        ("novo", "Novo"),
-        ("muito_bom", "Muito Bom"),
-        ("bom", "Bom"),
-        ("regular", "Regular"),
-    )
-
-    genero = forms.ChoiceField(choices=GENEROS, label="Gênero ou categoria")
-
     estado_conservacao = forms.ChoiceField(
-        choices=ESTADO_CONSERVACAO, label="Estado de Conservação"
+        choices=ESTADOS_CONSERVACAO,
+        label="Estado de conservação",
     )
 
     class Meta:
         model = Livro
         fields = ("titulo", "autor", "genero", "estado_conservacao", "descricao")
-
-        labels = {  # noqa: RUF012
+        labels = {
             "titulo": "Título do livro",
             "autor": "Autor",
-            "descricao": "Descrição do livro",
+            "descricao": "Descrição",
         }
-
-        widgets = {  # noqa: RUF012
+        widgets = {
             "titulo": forms.TextInput(
-                attrs={
-                    "placeholder": "Ex.: O Hobbit",
-                    "required": True,
-                }
+                attrs={"placeholder": "Ex.: O Hobbit", "autocomplete": "off"}
             ),
             "autor": forms.TextInput(
-                attrs={
-                    "placeholder": "Ex.: J.R.R. Tolkien",
-                    "required": True,
-                }
+                attrs={"placeholder": "Ex.: J. R. R. Tolkien", "autocomplete": "off"}
             ),
             "descricao": forms.Textarea(
                 attrs={
-                    "placeholder": "Ex.: Um livro sobre a Terra Média",
-                    "required": True,
+                    "placeholder": "Descreva brevemente a obra e qualquer informação relevante sobre este exemplar.",
                     "rows": 6,
                 }
             ),
         }
 
     def clean_titulo(self):
-        titulo = self.cleaned_data.get("titulo")
-        titulo = titulo.strip() if titulo else ""
-
+        titulo = (self.cleaned_data.get("titulo") or "").strip()
         if not titulo:
-            raise forms.ValidationError("O título é obrigatório.")
+            raise forms.ValidationError("Informe o título do livro.")
         return titulo
 
     def clean_autor(self):
-        autor = self.cleaned_data.get("autor")
-        autor = autor.strip() if autor else ""
-
-        if len(autor) < 2:
-            raise forms.ValidationError("O autor deve ter pelo menos 2 caracteres.")
-
+        autor = (self.cleaned_data.get("autor") or "").strip()
         if not autor:
-            raise forms.ValidationError("O autor é obrigatório.")
+            raise forms.ValidationError("Informe o autor.")
+        if len(autor) < 2:
+            raise forms.ValidationError("O nome do autor deve ter pelo menos 2 caracteres.")
         return autor
 
     def clean_descricao(self):
-        descricao = self.cleaned_data.get("descricao")
-        descricao = descricao.strip() if descricao else ""
-
+        descricao = (self.cleaned_data.get("descricao") or "").strip()
+        if not descricao:
+            raise forms.ValidationError("Informe uma descrição.")
         if len(descricao) < 10:
+            raise forms.ValidationError("A descrição deve ter pelo menos 10 caracteres.")
+        return descricao
+
+
+class ReservaForm(forms.ModelForm):
+    class Meta:
+        model = Reserva
+
+        fields = (
+            "data_retirada_prevista",
+        )
+
+        labels = {  # noqa: RUF012
+            "data_retirada_prevista": "Data desejada para retirada",
+        }
+
+        widgets = {  # noqa: RUF012
+            "data_retirada_prevista": forms.DateInput(
+                attrs={
+                    "type": "date",
+                }
+            ),
+        }
+
+    def clean_data_retirada_prevista(self):
+        data = self.cleaned_data.get("data_retirada_prevista")
+
+        if data and data < timezone.localdate():
             raise forms.ValidationError(
-                "A descrição deve ter pelo menos 10 caracteres."
+                "A data de retirada não pode estar no passado."
             )
 
-        if not descricao:
-            raise forms.ValidationError("A descrição é obrigatória.")
-        return descricao
+        return data

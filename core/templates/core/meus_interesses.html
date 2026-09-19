@@ -1,260 +1,98 @@
 {% extends 'core/base.html' %}
-
-{% block title %}
-  Meus Interesses | Estante Circular
-{% endblock %}
-
+{% block title %}Meus interesses | Estante Circular{% endblock %}
 {% block content %}
+<section class="pagina">
+    <div class="container">
+        <header class="cabecalho-pagina">
+            <span class="etiqueta">Acompanhamento</span>
+            <h1>Meus interesses</h1>
+            <p>Acompanhe manifestações de interesse, reservas e empréstimos associados à sua conta.</p>
+        </header>
 
-<section class="pagina-meus-interesses">
+        {% if interesses %}
+            <div class="lista-interesses-pessoal">
+                {% for interesse in interesses %}
+                    <article class="card-gestao">
+                        <div class="card-gestao-topo">
+                            <div>
+                                <span class="genero">{{ interesse.livro.genero_display }}</span>
+                                <h2>{{ interesse.livro.titulo }}</h2>
+                                <p>{{ interesse.livro.autor }}</p>
+                            </div>
+                            <span class="status-interesse status-{{ interesse.status|lower }}">{{ interesse.get_status_display }}</span>
+                        </div>
 
-  <div class="container">
+                        <div class="card-dados">
+                            <div>
+                                <span>Responsável</span>
+                                <strong>{% if interesse.livro.responsavel.get_full_name %}{{ interesse.livro.responsavel.get_full_name }}{% else %}{{ interesse.livro.responsavel.username }}{% endif %}</strong>
+                            </div>
+                            <div><span>Interesse registrado</span><strong>{{ interesse.data_interesse|date:"d/m/Y H:i" }}</strong></div>
+                        </div>
 
-    <header class="meus-interesses-cabecalho">
+                        {% if interesse.status == 'PENDENTE' %}
+                            <div class="aviso-inline">Sua manifestação de interesse está aguardando análise do responsável.</div>
+                        {% elif interesse.status == 'ACEITO' %}
+                            {% with reserva=interesse.reservas.all|last %}
+                                {% if reserva %}
+                                    <div class="andamento">
+                                        <div>
+                                            <span class="status-livro status-{{ reserva.status|lower }}">{{ reserva.get_status_display }}</span>
+                                            <strong>Reserva</strong>
+                                            <p>Retirada prevista para {{ reserva.data_retirada_prevista|date:"d/m/Y" }}.</p>
+                                        </div>
 
-      <span class="etiqueta">
-        Minhas solicitações
-      </span>
+                                        {% if reserva.status == 'PENDENTE' %}
+                                            <form method="post" action="{% url 'core:cancelar_reserva' reserva.pk %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="botao botao-terciario botao-compacto">Cancelar solicitação</button>
+                                            </form>
+                                        {% elif reserva.status == 'APROVADA' %}
+                                            <div class="andamento-acoes">
+                                                <span>A reserva foi aprovada. Combine a retirada com o responsável.</span>
+                                                <form method="post" action="{% url 'core:cancelar_reserva' reserva.pk %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="botao botao-terciario botao-compacto">Cancelar reserva</button>
+                                                </form>
+                                            </div>
+                                        {% elif reserva.emprestimo %}
+                                            <div class="andamento-acoes">
+                                                <span>Empréstimo: {{ reserva.emprestimo.get_status_display }}.</span>
+                                                {% if reserva.emprestimo.devolvido_em %}
+                                                    <small>Devolvido em {{ reserva.emprestimo.devolvido_em|date:"d/m/Y H:i" }}</small>
+                                                {% endif %}
+                                            </div>
+                                        {% else %}
+                                            <a href="{% url 'core:solicitar_reserva' interesse.pk %}" class="botao botao-principal botao-compacto">Nova solicitação de reserva</a>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    {% if interesse.livro.situacao == 'DISPONIVEL' %}
+                                        <div class="card-acoes">
+                                            <a href="{% url 'core:solicitar_reserva' interesse.pk %}" class="botao botao-principal">Solicitar reserva</a>
+                                        </div>
+                                    {% else %}
+                                        <div class="aviso-inline">Seu interesse foi aceito, mas o exemplar está temporariamente indisponível.</div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endwith %}
+                        {% else %}
+                            <div class="aviso-inline">Esta manifestação de interesse foi encerrada sem aprovação.</div>
+                        {% endif %}
 
-      <h1>
-        Meus interesses
-      </h1>
-
-      <p>
-        Acompanhe os livros em que você demonstrou interesse
-        e consulte o andamento de cada solicitação.
-      </p>
-
-    </header>
-
-
-    {% if interesses %}
-
-      <div class="lista-meus-interesses">
-
-        {% for interesse in interesses %}
-
-          <article class="card-meu-interesse">
-
-            <!-- CABEÇALHO -->
-            <div class="meu-interesse-conteudo">
-
-              <div class="meu-interesse-livro">
-
-                <span class="genero">
-                  {{ interesse.livro.genero }}
-                </span>
-
-                <h2>
-                  {{ interesse.livro.titulo }}
-                </h2>
-
-                <p class="meu-interesse-autor">
-                  {{ interesse.livro.autor }}
-                </p>
-
-              </div>
-
-
-              <span
-                class="status-interesse status-{{ interesse.status|lower }}"
-              >
-                {{ interesse.get_status_display }}
-              </span>
-
+                        <div class="card-acoes">
+                            <a href="{% url 'core:detalhes_livro' interesse.livro.pk %}" class="botao botao-secundario">Ver livro</a>
+                        </div>
+                    </article>
+                {% endfor %}
             </div>
-
-
-            <!-- INFORMAÇÕES -->
-            <div class="meu-interesse-informacoes">
-
-              <div>
-                <span>
-                  Responsável
-                </span>
-
-                <strong>
-                  {% if interesse.livro.responsavel.get_full_name %}
-                    {{ interesse.livro.responsavel.get_full_name }}
-                  {% else %}
-                    {{ interesse.livro.responsavel.username }}
-                  {% endif %}
-                </strong>
-              </div>
-
-
-              <div>
-                <span>
-                  Interesse registrado em
-                </span>
-
-                <strong>
-                  {{ interesse.data_interesse|date:'d/m/Y H:i' }}
-                </strong>
-              </div>
-
+        {% else %}
+            <div class="estado-vazio">
+                <h2>Você ainda não demonstrou interesse em nenhum livro</h2>
+                <p>Explore o catálogo e encontre sua próxima leitura.</p>
+                <a href="{% url 'core:catalogo' %}" class="botao botao-principal">Explorar catálogo</a>
             </div>
-
-
-            <!-- SITUAÇÃO -->
-            {% if interesse.status == 'PENDENTE' %}
-
-              <div class="meu-interesse-situacao situacao-pendente">
-
-                <div class="situacao-icone">
-                  !
-                </div>
-
-                <div>
-                  <strong>
-                    Aguardando resposta
-                  </strong>
-
-                  <p>
-                    Sua solicitação ainda está aguardando uma resposta
-                    do responsável pelo livro.
-                  </p>
-                </div>
-
-              </div>
-
-            {% elif interesse.status == 'ACEITO' %}
-
-              <div class="meu-interesse-situacao situacao-aceita">
-
-                <div class="situacao-icone">
-                  ✓
-                </div>
-
-                <div>
-                  <strong>
-                    Interesse aceito
-                  </strong>
-
-                  <p>
-                    O responsável aceitou seu interesse.
-                    O livro poderá avançar para a próxima etapa de circulação.
-                  </p>
-                </div>
-
-              </div>
-
-            {% elif interesse.status == 'RECUSADO' %}
-
-              <div class="meu-interesse-situacao situacao-recusada">
-
-                <div class="situacao-icone">
-                  ×
-                </div>
-
-                <div>
-                  <strong>
-                    Interesse não aceito
-                  </strong>
-
-                  <p>
-                    O responsável não aceitou esta solicitação.
-                  </p>
-                </div>
-
-              </div>
-
-            {% endif %}
-
-
-            <!-- RESERVA -->
-            {% for reserva in interesse.reservas.all %}
-
-              {% if reserva.status == 'ATIVA' %}
-
-                <div class="meu-interesse-reserva">
-
-                  <div class="reserva-interesse-icone">
-                    ✓
-                  </div>
-
-                  <div class="reserva-interesse-conteudo">
-
-                    <span class="status-livro status-reservado">
-                      Reserva ativa
-                    </span>
-
-                    <strong>
-                      Este livro está reservado para você
-                    </strong>
-
-                    <p>
-                      Aguarde as próximas orientações do responsável
-                      para combinar a retirada do livro.
-                    </p>
-
-                  </div>
-
-                </div>
-
-              {% endif %}
-
-            {% endfor %}
-
-
-            <!-- AÇÕES -->
-            <div class="meu-interesse-acoes">
-
-              {% if interesse.livro.ativo %}
-
-                <a
-                  href="{% url 'core:detalhes_livro' interesse.livro.pk %}"
-                  class="botao botao-secundario"
-                >
-                  Ver detalhes do livro
-                </a>
-
-              {% else %}
-
-                <span class="texto-livro-inativo">
-                  Este livro não está mais disponível no catálogo.
-                </span>
-
-              {% endif %}
-
-            </div>
-
-          </article>
-
-        {% endfor %}
-
-      </div>
-
-    {% else %}
-
-      <div class="nenhum-resultado">
-
-        <div class="nenhum-resultado-icone">
-          ♡
-        </div>
-
-        <h2>
-          Nenhum interesse registrado
-        </h2>
-
-        <p>
-          Você ainda não demonstrou interesse em nenhum livro
-          da Estante Circular.
-        </p>
-
-        <a
-          href="{% url 'core:catalogo' %}"
-          class="botao botao-principal"
-        >
-          Explorar catálogo
-        </a>
-
-      </div>
-
-    {% endif %}
-
-  </div>
-
+        {% endif %}
+    </div>
 </section>
-
 {% endblock %}

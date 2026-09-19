@@ -1,102 +1,32 @@
 {% extends 'core/base.html' %}
-
-{% block title %}
-  Editar Livro | Estante Circular
-{% endblock %}
-
+{% block title %}Editar {{ livro.titulo }} | Estante Circular{% endblock %}
 {% block content %}
-  <section class="pagina-disponibilizar">
-    <div class="container disponibilizar-container">
-      <div class="disponibilizar-apresentacao">
-        <span class="etiqueta">Atualizar livro</span>
-
-        <h1>Editar informações do livro</h1>
-
-        <p>Atualize os dados do livro selecionado. As alterações serão armazenadas no banco de dados da Estante Circular.</p>
-
-        <div class="informacao-destaque">
-          <strong>Livro selecionado</strong>
-
-          <p>
-            Você está editando:
-            <strong>{{ livro.titulo }}</strong>
-          </p>
-        </div>
-      </div>
-
-      <div class="card-disponibilizar">
-        <div class="cabecalho-formulario">
-          <h2>Dados do livro</h2>
-
-          <p>Altere somente as informações necessárias.</p>
+<section class="pagina">
+    <div class="container layout-formulario">
+        <div class="painel-contexto">
+            <span class="etiqueta">Gerenciar exemplar</span>
+            <h1>Editar informações</h1>
+            <p>Mantenha os dados do exemplar atualizados para oferecer informações claras a outros leitores.</p>
+            <div class="informacao-destaque">
+                <strong>{{ livro.titulo }}</strong>
+                <p>As alterações passam a valer imediatamente no catálogo.</p>
+            </div>
         </div>
 
-        <form method="post">
-          {% csrf_token %}
-
-          <div class="campo">
-            <label for="{{ form.titulo.id_for_label }}">{{ form.titulo.label }}</label>
-
-            {{ form.titulo }}
-
-            {% for erro in form.titulo.errors %}
-              <span class="erro-campo">{{ erro }}</span>
-            {% endfor %}
-          </div>
-
-          <div class="campo">
-            <label for="{{ form.autor.id_for_label }}">{{ form.autor.label }}</label>
-
-            {{ form.autor }}
-
-            {% for erro in form.autor.errors %}
-              <span class="erro-campo">{{ erro }}</span>
-            {% endfor %}
-          </div>
-
-          <div class="campo">
-            <label for="{{ form.genero.id_for_label }}">{{ form.genero.label }}</label>
-
-            {{ form.genero }}
-
-            {% for erro in form.genero.errors %}
-              <span class="erro-campo">{{ erro }}</span>
-            {% endfor %}
-          </div>
-
-          <div class="campo">
-            <label for="{{ form.estado_conservacao.id_for_label }}">{{ form.estado_conservacao.label }}</label>
-
-            {{ form.estado_conservacao }}
-
-            {% for erro in form.estado_conservacao.errors %}
-              <span class="erro-campo">{{ erro }}</span>
-            {% endfor %}
-          </div>
-
-          <div class="campo">
-            <label for="{{ form.descricao.id_for_label }}">{{ form.descricao.label }}</label>
-
-            {{ form.descricao }}
-
-            {% for erro in form.descricao.errors %}
-              <span class="erro-campo">{{ erro }}</span>
-            {% endfor %}
-          </div>
-
-          <div class="campo">
-            <label for="responsavel">Responsável</label>
-
-            <input type="text" id="responsavel" value="{{ livro.responsavel.get_full_name }}" readonly />
-          </div>
-
-          <div class="acoes-formulario">
-            <button type="submit" class="botao botao-principal">Salvar alterações</button>
-
-            <a href="{% url 'core:detalhes_livro' livro.pk %}" class="botao botao-secundario">Cancelar</a>
-          </div>
-        </form>
-      </div>
+        <div class="card-formulario">
+            <div class="cabecalho-formulario">
+                <h2>Informações do livro</h2>
+                <p>Revise os dados e salve apenas o que precisar ser alterado.</p>
+            </div>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% include 'core/partials/form_livro.html' %}
+                <div class="acoes-formulario">
+                    <button type="submit" class="botao botao-principal">Salvar alterações</button>
+                    <a href="{% url 'core:detalhes_livro' livro.pk %}" class="botao botao-secundario">Cancelar</a>
+                </div>
+            </form>
+        </div>
     </div>
-  </section>
+</section>
 {% endblock %}

@@ -1,74 +1,41 @@
 {% extends 'core/base.html' %}
-
-{% block title %}
-  Entrar | Estante Circular
-{% endblock %}
-
+{% block title %}Entrar | Estante Circular{% endblock %}
 {% block content %}
-  <section class="pagina-login">
-    <div class="container login-container">
-      <div class="login-apresentacao">
-        <span class="etiqueta">Área do leitor</span>
-
-        <h1>Entre na Estante Circular</h1>
-
-        <p>Acesse sua conta para participar da comunidade e acompanhar os livros disponíveis.</p>
-
-        <div class="aviso-login">
-          <strong>Ambiente de aprendizagem</strong>
-
-          <p>Nesta etapa o login é simulado. As credenciais são configuradas por variáveis de ambiente.</p>
+<section class="pagina">
+    <div class="container layout-formulario layout-autenticacao">
+        <div class="painel-contexto">
+            <span class="etiqueta">Sua conta</span>
+            <h1>Entre na Estante Circular</h1>
+            <p>Acesse sua conta para compartilhar livros, acompanhar interesses e gerenciar reservas.</p>
+            <div class="informacao-destaque">
+                <strong>Ainda não participa?</strong>
+                <p>Crie uma conta gratuita e comece a circular suas leituras.</p>
+                <a href="{% url 'core:cadastro' %}" class="link-destaque">Criar conta</a>
+            </div>
         </div>
-      </div>
 
-      <div class="card-login">
-        {% if request.user.is_authenticated %}
-          <div class="mensagem-sucesso">
-            <h2>Login realizado</h2>
-
-            <p>Bem-vindo à Estante Circular.</p>
-
-            <p>
-              Usuário:
-              <strong>{{ request.user.first_name }}</strong>
-            </p>
-
-            <a href="{% url 'core:index' %}" class="botao botao-principal">Ir para o início</a>
-          </div>
-        {% else %}
-          <h2>Entrar</h2>
-
-          <p class="texto-apoio">Informe suas credenciais.</p>
-
-          {% if erro %}
-            <div class="mensagem-erro" role="alert">{{ erro }}</div>
-          {% endif %}
-
-          <form method="post">
-            {% csrf_token %}
-
-            <div class="campo">
-              <label for="email">E-mail</label>
-
-              <input type="email" id="email" name="email" placeholder="seu@email.com" required />
+        <div class="card-formulario">
+            <div class="cabecalho-formulario">
+                <h2>Acessar conta</h2>
+                <p>Use o e-mail informado no cadastro.</p>
             </div>
 
-            <div class="campo">
-              <label for="senha">Senha</label>
+            {% if erro %}<div class="mensagem-erro" role="alert">{{ erro }}</div>{% endif %}
 
-              <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required />
-            </div>
-
-            <button type="submit" class="botao botao-principal botao-login">Entrar</button>
-          </form>
-
-          <div class="login-cadastro">
-            <p>Ainda não possui uma conta?</p>
-
-            <a href="{% url 'core:cadastro' %}" class="botao botao-secundario">Criar minha conta</a>
-          </div>
-        {% endif %}
-      </div>
+            <form method="post">
+                {% csrf_token %}
+                {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+                <div class="campo">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" value="{{ email }}" placeholder="seu@email.com" autocomplete="email" required>
+                </div>
+                <div class="campo">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" placeholder="Digite sua senha" autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="botao botao-principal botao-largura-total">Entrar</button>
+            </form>
+        </div>
     </div>
-  </section>
+</section>
 {% endblock %}

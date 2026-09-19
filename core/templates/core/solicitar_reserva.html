@@ -1,0 +1,36 @@
+{% extends 'core/base.html' %}
+{% block title %}Solicitar reserva | Estante Circular{% endblock %}
+{% block content %}
+<section class="pagina">
+    <div class="container layout-formulario">
+        <div class="painel-contexto">
+            <span class="etiqueta">Reserva</span>
+            <h1>Solicitar retirada</h1>
+            <p>Informe a data em que pretende retirar o exemplar. O responsável precisará aprovar a solicitação.</p>
+            <div class="informacao-destaque">
+                <strong>{{ livro.titulo }}</strong>
+                <p>{{ livro.autor }}</p>
+            </div>
+        </div>
+
+        <div class="card-formulario">
+            <div class="cabecalho-formulario">
+                <h2>Data prevista</h2>
+                <p>Escolha uma data atual ou futura para a retirada.</p>
+            </div>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <div class="campo {% if form.data_retirada_prevista.errors %}campo-com-erro{% endif %}">
+                    <label for="{{ form.data_retirada_prevista.id_for_label }}">{{ form.data_retirada_prevista.label }}</label>
+                    {{ form.data_retirada_prevista }}
+                    {% for erro in form.data_retirada_prevista.errors %}<span class="erro-campo">{{ erro }}</span>{% endfor %}
+                </div>
+                <div class="acoes-formulario">
+                    <button type="submit" class="botao botao-principal">Enviar solicitação</button>
+                    <a href="{% url 'core:meus_interesses' %}" class="botao botao-secundario">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
