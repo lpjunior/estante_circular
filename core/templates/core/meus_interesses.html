@@ -6,7 +6,7 @@
         <header class="cabecalho-pagina">
             <span class="etiqueta">Acompanhamento</span>
             <h1>Meus interesses</h1>
-            <p>Acompanhe manifestações de interesse, reservas e empréstimos associados à sua conta.</p>
+            <p>Acompanhe interesses, negociações de data, reservas e empréstimos associados à sua conta.</p>
         </header>
 
         {% if interesses %}
@@ -33,23 +33,39 @@
                         {% if interesse.status == 'PENDENTE' %}
                             <div class="aviso-inline">Sua manifestação de interesse está aguardando análise do responsável.</div>
                         {% elif interesse.status == 'ACEITO' %}
-                            {% with reserva=interesse.reservas.all|last %}
+                            {% with reserva=interesse.reservas.all|first %}
                                 {% if reserva %}
                                     <div class="andamento">
                                         <div>
                                             <span class="status-livro status-{{ reserva.status|lower }}">{{ reserva.get_status_display }}</span>
                                             <strong>Reserva</strong>
-                                            <p>Retirada prevista para {{ reserva.data_retirada_prevista|date:"d/m/Y" }}.</p>
+                                            {% if reserva.data_retirada_prevista %}
+                                                <p>Data atualmente proposta: {{ reserva.data_retirada_prevista|date:"d/m/Y" }}.</p>
+                                            {% endif %}
                                         </div>
 
-                                        {% if reserva.status == 'PENDENTE' %}
-                                            <form method="post" action="{% url 'core:cancelar_reserva' reserva.pk %}">
-                                                {% csrf_token %}
-                                                <button type="submit" class="botao botao-terciario botao-compacto">Cancelar solicitação</button>
-                                            </form>
+                                        {% if reserva.status == 'AGUARDANDO_RESPONSAVEL' %}
+                                            <div class="andamento-acoes">
+                                                <span>Sua proposta foi enviada e aguarda a resposta do responsável.</span>
+                                            </div>
+                                        {% elif reserva.status == 'AGUARDANDO_INTERESSADO' %}
+                                            <div class="andamento-acoes">
+                                                <span>O responsável sugeriu uma nova data. Revise a proposta para continuar.</span>
+                                                <div class="grupo-acoes">
+                                                    <form method="post" action="{% url 'core:aceitar_reserva_interessado' reserva.pk %}">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="botao botao-principal botao-compacto">Aceitar data</button>
+                                                    </form>
+                                                    <a href="{% url 'core:alterar_data_reserva_interessado' reserva.pk %}" class="botao botao-secundario botao-compacto">Propor outra data</a>
+                                                    <form method="post" action="{% url 'core:cancelar_reserva' reserva.pk %}">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="botao botao-terciario botao-compacto">Recusar</button>
+                                                    </form>
+                                                </div>
+                                            </div>
                                         {% elif reserva.status == 'APROVADA' %}
                                             <div class="andamento-acoes">
-                                                <span>A reserva foi aprovada. Combine a retirada com o responsável.</span>
+                                                <span>Reserva confirmada. A retirada está prevista para {{ reserva.data_retirada_prevista|date:"d/m/Y" }}.</span>
                                                 <form method="post" action="{% url 'core:cancelar_reserva' reserva.pk %}">
                                                     {% csrf_token %}
                                                     <button type="submit" class="botao botao-terciario botao-compacto">Cancelar reserva</button>
@@ -62,8 +78,24 @@
                                                     <small>Devolvido em {{ reserva.emprestimo.devolvido_em|date:"d/m/Y H:i" }}</small>
                                                 {% endif %}
                                             </div>
-                                        {% else %}
-                                            <a href="{% url 'core:solicitar_reserva' interesse.pk %}" class="botao botao-principal botao-compacto">Nova solicitação de reserva</a>
+                                        {% elif reserva.status == 'CANCELADA' or reserva.status == 'NAO_RETIRADA' %}
+                                            {% if interesse.livro.situacao == 'DISPONIVEL' %}
+                                                <a href="{% url 'core:solicitar_reserva' interesse.pk %}" class="botao botao-principal botao-compacto">Solicitar nova reserva</a>
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% if reserva.propostas.all %}
+                                            <div class="historico-propostas compacto">
+                                                <strong>Histórico de datas</strong>
+                                                <ul>
+                                                    {% for proposta in reserva.propostas.all %}
+                                                        <li>
+                                                            {{ proposta.data_retirada|date:"d/m/Y" }}
+                                                            <span>por {{ proposta.get_autor_display|lower }}</span>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
                                         {% endif %}
                                     </div>
                                 {% else %}

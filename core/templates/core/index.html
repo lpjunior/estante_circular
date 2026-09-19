@@ -1,109 +1,93 @@
 {% extends 'core/base.html' %}
-{% block title %}
-  Estante Circular | Compartilhe livros
-{% endblock %}
+{% block title %}Estante Circular | Compartilhe livros{% endblock %}
 {% block content %}
-  <section class="hero">
+<section class="hero">
     <div class="container hero-conteudo">
-      <div class="hero-texto">
-        <span class="etiqueta">Leitura compartilhada</span>
-        <h1>{{ titulo_pagina }}</h1>
-        <p>{{ descricao }}</p>
-        <div class="hero-acoes">
-          <a href="{% url 'core:catalogo' %}" class="botao botao-principal">Explorar catálogo</a>
-          {% if request.user.is_authenticated %}
-            <a href="{% url 'core:disponibilizar_livro' %}" class="botao botao-secundario">Disponibilizar um livro</a>
-          {% else %}
-            <a href="{% url 'core:cadastro' %}" class="botao botao-secundario">Criar conta</a>
-          {% endif %}
-        </div>
-      </div>
-      <div class="hero-destaque">
-        <div class="hero-livros">
-          <div class="circulo-decorativo"></div>
-
-          <div class="estante-ilustracao">
-            <div class="livro-visual livro-verde"></div>
-            <div class="livro-visual livro-claro"></div>
-            <div class="livro-visual livro-terracota"></div>
-
-            <div class="prateleira"></div>
-          </div>
-
-          <div class="hero-destaque-texto">
+        <div class="hero-texto">
             <span class="etiqueta">Leitura compartilhada</span>
-
-            <h2>Livros feitos para circular</h2>
-
-            <p>Compartilhe livros da sua estante e conecte cada exemplar a uma nova história.</p>
-          </div>
+            <h1>{{ titulo_pagina }}</h1>
+            <p>{{ descricao }}</p>
+            <div class="hero-acoes">
+                <a href="{% url 'core:catalogo' %}" class="botao botao-principal">Explorar catálogo</a>
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'core:disponibilizar_livro' %}" class="botao botao-secundario">Disponibilizar um livro</a>
+                {% else %}
+                    <a href="{% url 'core:cadastro' %}" class="botao botao-secundario">Criar conta</a>
+                {% endif %}
+            </div>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="secao">
-    <div class="container">
-      <div class="titulo-secao">
-        <span class="etiqueta">Como funciona</span>
-        <h2>Um fluxo simples para colocar livros em circulação</h2>
-        <p>Cadastre seus exemplares, encontre novas leituras e acompanhe cada etapa da circulação.</p>
-      </div>
-      <div class="passos">
-        <article class="card-passo">
-          <span class="numero-passo">01</span>
-          <h3>Disponibilize</h3>
-          <p>Cadastre livros que você deseja compartilhar com outros leitores.</p>
-        </article>
-        <article class="card-passo">
-          <span class="numero-passo">02</span>
-          <h3>Conecte-se</h3>
-          <p>Demonstre interesse, combine a retirada e acompanhe a aprovação da reserva.</p>
-        </article>
-        <article class="card-passo">
-          <span class="numero-passo">03</span>
-          <h3>Mantenha em circulação</h3>
-          <p>Registre empréstimos e devoluções preservando o histórico de cada exemplar.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="secao secao-alternativa">
-    <div class="container">
-      <div class="titulo-secao titulo-secao-linha">
-        <div>
-          <span class="etiqueta">Disponíveis agora</span>
-          <h2>Leituras recentes</h2>
+        <div class="hero-destaque" aria-hidden="true">
+            <div class="estante-ilustracao">
+                <span class="livro-lombo l1"></span>
+                <span class="livro-lombo l2"></span>
+                <span class="livro-lombo l3"></span>
+                <span class="livro-lombo l4"></span>
+                <span class="livro-lombo l5"></span>
+            </div>
         </div>
-        <a href="{% url 'core:catalogo' %}" class="link-destaque">Ver catálogo completo</a>
-      </div>
+    </div>
+</section>
 
-      {% if livros_destaque %}
-        <div class="grade-livros">
-          {% for livro in livros_destaque %}
-            <article class="card-livro">
-              <div class="capa-livro" aria-hidden="true">
-                <span>{{ livro.titulo|slice:':1'|upper }}</span>
-              </div>
-              <div class="card-livro-conteudo">
-                <div class="card-meta">
-                  <span class="genero">{{ livro.genero_display }}</span>
-                  <span class="status-livro status-disponivel">Disponível</span>
-                </div>
-                <h3>{{ livro.titulo }}</h3>
-                <p>{{ livro.autor }}</p>
-                <a href="{% url 'core:detalhes_livro' livro.pk %}" class="botao botao-secundario">Ver detalhes</a>
-              </div>
+<section class="secao">
+    <div class="container">
+        <div class="titulo-secao">
+            <span class="etiqueta">Como funciona</span>
+            <h2>Um fluxo simples para colocar livros em circulação</h2>
+            <p>Cadastre seus exemplares, encontre novas leituras e acompanhe cada etapa da circulação.</p>
+        </div>
+        <div class="passos">
+            <article class="card-passo">
+                <span class="numero-passo">01</span>
+                <h3>Disponibilize</h3>
+                <p>Cadastre livros que você deseja compartilhar com outros leitores.</p>
             </article>
-          {% endfor %}
+            <article class="card-passo">
+                <span class="numero-passo">02</span>
+                <h3>Conecte-se</h3>
+                <p>Demonstre interesse, combine a retirada e acompanhe a aprovação da reserva.</p>
+            </article>
+            <article class="card-passo">
+                <span class="numero-passo">03</span>
+                <h3>Mantenha em circulação</h3>
+                <p>Registre empréstimos e devoluções preservando o histórico de cada exemplar.</p>
+            </article>
         </div>
-      {% else %}
-        <div class="estado-vazio">
-          <h3>Nenhum livro disponível no momento</h3>
-          <p>Novos títulos aparecerão aqui assim que forem disponibilizados.</p>
-        </div>
-      {% endif %}
     </div>
-  </section>
+</section>
+
+<section class="secao secao-alternativa">
+    <div class="container">
+        <div class="titulo-secao titulo-secao-linha">
+            <div>
+                <span class="etiqueta">Disponíveis agora</span>
+                <h2>Leituras recentes</h2>
+            </div>
+            <a href="{% url 'core:catalogo' %}" class="link-destaque">Ver catálogo completo</a>
+        </div>
+
+        {% if livros_destaque %}
+            <div class="grade-livros">
+                {% for livro in livros_destaque %}
+                    <article class="card-livro">
+                        <div class="capa-livro" aria-hidden="true"><span>{{ livro.titulo|slice:":1"|upper }}</span></div>
+                        <div class="card-livro-conteudo">
+                            <div class="card-meta">
+                                <span class="genero">{{ livro.genero_display }}</span>
+                                <span class="status-livro status-disponivel">Disponível</span>
+                            </div>
+                            <h3>{{ livro.titulo }}</h3>
+                            <p>{{ livro.autor }}</p>
+                            <a href="{% url 'core:detalhes_livro' livro.pk %}" class="botao botao-secundario">Ver detalhes</a>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="estado-vazio">
+                <h3>Nenhum livro disponível no momento</h3>
+                <p>Novos títulos aparecerão aqui assim que forem disponibilizados.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
 {% endblock %}

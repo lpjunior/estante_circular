@@ -1,0 +1,42 @@
+{% extends 'core/base.html' %}
+{% block title %}Propor nova data | Estante Circular{% endblock %}
+{% block content %}
+<section class="pagina pagina-formulario">
+    <div class="container container-estreito">
+        <a href="{% if perfil == 'responsavel' %}{% url 'core:detalhes_livro' livro.pk %}{% else %}{% url 'core:meus_interesses' %}{% endif %}" class="link-voltar">Voltar</a>
+
+        <div class="card-formulario">
+            <header class="cabecalho-formulario">
+                <span class="etiqueta">Negociação de retirada</span>
+                <h1>Propor uma nova data</h1>
+                <p>
+                    A data atual é
+                    <strong>{{ reserva.data_retirada_prevista|date:"d/m/Y" }}</strong>.
+                    Ao enviar uma nova sugestão, a outra pessoa deverá aceitá-la ou apresentar uma contraproposta.
+                </p>
+            </header>
+
+            <div class="resumo-reserva">
+                <span>Livro</span>
+                <strong>{{ livro.titulo }}</strong>
+            </div>
+
+            <form method="post" class="formulario-padrao">
+                {% csrf_token %}
+                <div class="campo">
+                    <label for="{{ form.data_retirada.id_for_label }}">{{ form.data_retirada.label }}</label>
+                    {{ form.data_retirada }}
+                    {% for erro in form.data_retirada.errors %}
+                        <span class="erro-campo">{{ erro }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="acoes-formulario">
+                    <button type="submit" class="botao botao-principal">Enviar nova proposta</button>
+                    <a href="{% if perfil == 'responsavel' %}{% url 'core:detalhes_livro' livro.pk %}{% else %}{% url 'core:meus_interesses' %}{% endif %}" class="botao botao-secundario">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

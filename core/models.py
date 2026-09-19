@@ -46,7 +46,10 @@ class Livro(models.Model):
 
     @property
     def genero_display(self) -> str:
-        return self.GENERO_LABELS.get(self.genero, self.genero.replace("_", " ").title())
+        return self.GENERO_LABELS.get(
+            self.genero,
+            self.genero.replace("_", " ").title(),
+        )
 
     @property
     def estado_conservacao_display(self) -> str:
@@ -83,7 +86,7 @@ class Interesse(models.Model):
     data_interesse = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        constraints = [
+        constraints = [  # noqa: RUF012
             models.UniqueConstraint(
                 fields=["livro", "interessado"],
                 name="interesse_unico_por_livro_usuario",
@@ -96,9 +99,15 @@ class Interesse(models.Model):
 
 class Reserva(models.Model):
     class Status(models.TextChoices):
-        PENDENTE = "PENDENTE", "Pendente"
+        AGUARDANDO_RESPONSAVEL = (
+            "AGUARDANDO_RESPONSAVEL",
+            "Aguardando responsável",
+        )
+        AGUARDANDO_INTERESSADO = (
+            "AGUARDANDO_INTERESSADO",
+            "Aguardando interessado",
+        )
         APROVADA = "APROVADA", "Aprovada"
-        RECUSADA = "RECUSADA", "Recusada"
         CANCELADA = "CANCELADA", "Cancelada"
         NAO_RETIRADA = "NAO_RETIRADA", "Não retirada"
         CONCLUIDA = "CONCLUIDA", "Concluída"
@@ -108,34 +117,54 @@ class Reserva(models.Model):
         on_delete=models.PROTECT,
         related_name="reservas",
     )
-
     status = models.CharField(
-        max_length=20,
+        max_length=30,
         choices=Status.choices,
-        default=Status.PENDENTE,
+        default=Status.AGUARDANDO_RESPONSAVEL,
     )
-
-    data_retirada_prevista = models.DateField(
-        null=True,
-        blank=True,
-    )
-
+    data_retirada_prevista = models.DateField(null=True, blank=True)
     data_reserva = models.DateTimeField(auto_now_add=True)
-
-    data_aprovacao = models.DateTimeField(
+    data_aprovacao = models.DateTimeField(null=True, blank=True)
+    data_encerramento = models.DateTimeField(null=True, blank=True)
+    cancelada_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="reservas_canceladas",
         null=True,
         blank=True,
     )
 
-    data_encerramento = models.DateTimeField(
-        null=True,
-        blank=True,
-    )
+    class Meta:
+        ordering = ["-data_reserva"]  # noqa: RUF012
 
     def __str__(self) -> str:
         return (
             f"Reserva de {self.interesse.livro.titulo} para "
             f"{self.interesse.interessado.username} - {self.get_status_display()}" # type: ignore
+        )
+
+
+class PropostaReserva(models.Model):
+    class Autor(models.TextChoices):
+        INTERESSADO = "INTERESSADO", "Interessado"
+        RESPONSAVEL = "RESPONSAVEL", "Responsável"
+
+    reserva = models.ForeignKey(
+        Reserva,
+        on_delete=models.CASCADE,
+        related_name="propostas",
+    )
+    data_retirada = models.DateField()
+    autor = models.CharField(max_length=20, choices=Autor.choices)
+    criada_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["criada_em"]  # noqa: RUF012
+
+    def __str__(self) -> str:
+        return (
+            f"Proposta de {self.get_autor_display()} para " # type: ignore
+            f"{self.data_retirada:%d/%m/%Y}"
         )
 
 

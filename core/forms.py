@@ -34,7 +34,10 @@ class LivroForm(forms.ModelForm):
             ),
             "descricao": forms.Textarea(
                 attrs={
-                    "placeholder": "Descreva brevemente a obra e qualquer informação relevante sobre este exemplar.",
+                    "placeholder": (
+                        "Descreva brevemente a obra e qualquer informação "
+                        "relevante sobre este exemplar."
+                    ),
                     "rows": 6,
                 }
             ),
@@ -51,7 +54,9 @@ class LivroForm(forms.ModelForm):
         if not autor:
             raise forms.ValidationError("Informe o autor.")
         if len(autor) < 2:
-            raise forms.ValidationError("O nome do autor deve ter pelo menos 2 caracteres.")
+            raise forms.ValidationError(
+                "O nome do autor deve ter pelo menos 2 caracteres."
+            )
         return autor
 
     def clean_descricao(self):
@@ -59,36 +64,44 @@ class LivroForm(forms.ModelForm):
         if not descricao:
             raise forms.ValidationError("Informe uma descrição.")
         if len(descricao) < 10:
-            raise forms.ValidationError("A descrição deve ter pelo menos 10 caracteres.")
+            raise forms.ValidationError(
+                "A descrição deve ter pelo menos 10 caracteres."
+            )
         return descricao
 
 
 class ReservaForm(forms.ModelForm):
     class Meta:
         model = Reserva
-
-        fields = (
-            "data_retirada_prevista",
-        )
-
-        labels = {  # noqa: RUF012
+        fields = ("data_retirada_prevista",)
+        labels = {
             "data_retirada_prevista": "Data desejada para retirada",
         }
-
-        widgets = {  # noqa: RUF012
-            "data_retirada_prevista": forms.DateInput(
-                attrs={
-                    "type": "date",
-                }
-            ),
+        widgets = {
+            "data_retirada_prevista": forms.DateInput(attrs={"type": "date"}),
         }
 
     def clean_data_retirada_prevista(self):
         data = self.cleaned_data.get("data_retirada_prevista")
-
-        if data and data < timezone.localdate():
+        if not data:
+            raise forms.ValidationError("Informe uma data para retirada.")
+        if data < timezone.localdate():
             raise forms.ValidationError(
                 "A data de retirada não pode estar no passado."
             )
+        return data
 
+
+class AlterarDataReservaForm(forms.Form):
+    data_retirada = forms.DateField(
+        label="Nova data para retirada",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+
+    def clean_data_retirada(self):
+        data = self.cleaned_data.get("data_retirada")
+        if data and data < timezone.localdate():
+            raise forms.ValidationError(
+                "A nova data de retirada não pode estar no passado."
+            )
         return data

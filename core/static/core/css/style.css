@@ -9,7 +9,6 @@
     --text-muted: #7c8981;
     --brand: #2f5d49;
     --brand-dark: #234737;
-    --brand-deep: #163127;
     --brand-soft: #dce9e1;
     --border: #dfe5e1;
     --border-strong: #cbd5ce;
@@ -457,161 +456,25 @@ p {
 
 .hero-destaque {
     display: flex;
-    align-items: center;
     justify-content: center;
-}
-
-/* Ilustração principal da home: estante de livros físicos */
-.hero-livros {
-    position: relative;
-    width: 100%;
-    max-width: 420px;
-    min-height: 420px;
-    padding: 40px 32px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(145deg, var(--brand-dark), var(--brand-deep));
-    border-radius: 28px;
-    box-shadow: var(--shadow-md);
-    overflow: hidden;
-}
-
-.circulo-decorativo {
-    position: absolute;
-    width: 270px;
-    height: 270px;
-    top: 44px;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 2px solid rgba(255, 255, 255, 0.18);
-    border-radius: 50%;
-}
-
-.circulo-decorativo::before {
-    content: "";
-    position: absolute;
-    width: 210px;
-    height: 210px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    border-radius: 50%;
 }
 
 .estante-ilustracao {
-    position: relative;
-    z-index: 2;
-    width: 230px;
-    height: 180px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 30px;
-}
-
-.livro-visual {
-    position: relative;
-    width: 48px;
-    border-radius: 5px 5px 2px 2px;
-    box-shadow: inset -5px 0 0 rgba(0, 0, 0, 0.08), 0 8px 16px rgba(0, 0, 0, 0.12);
-}
-
-.livro-visual::before {
-    content: "";
-    position: absolute;
-    top: 20px;
-    left: 8px;
-    right: 8px;
-    height: 3px;
-    background: rgba(255, 255, 255, 0.60);
-    border-radius: 999px;
-}
-
-.livro-visual::after {
-    content: "";
-    position: absolute;
-    top: 30px;
-    left: 8px;
-    right: 16px;
-    height: 2px;
-    background: rgba(255, 255, 255, 0.35);
-    border-radius: 999px;
-}
-
-.livro-verde {
-    height: 125px;
-    background: #8fb7a4;
-    transform: rotate(-4deg);
-}
-
-.livro-claro {
-    height: 145px;
-    background: #f4ead7;
-}
-
-.livro-terracota {
-    height: 112px;
-    background: #c88968;
-    transform: rotate(4deg);
-}
-
-.prateleira {
-    position: absolute;
-    bottom: 10px;
-    left: 6px;
-    right: 6px;
-    height: 12px;
-    background: #d9bc91;
-    border-radius: 4px;
-    box-shadow: 0 6px 0 #ad8a62, 0 12px 18px rgba(0, 0, 0, 0.16);
-}
-
-.hero-destaque-texto {
-    position: relative;
-    z-index: 2;
-    max-width: 300px;
-    text-align: center;
-    color: #ffffff;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
-}
-
-.hero-destaque-texto h2 {
-    margin: 14px 0 10px;
-    font-size: clamp(1.5rem, 3vw, 2rem);
-    line-height: 1.15;
-    color: #ffffff;
-}
-
-.hero-destaque-texto p {
-    margin: 0;
-    color: rgba(255, 255, 255, 0.94);
-    font-size: 0.98rem;
-    line-height: 1.65;
-}
-
-.hero-destaque-texto .etiqueta {
-    background: rgba(255, 255, 255, 0.12);
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.28);
-}
-
-/* Compatibilidade com a versão anterior da home */
-.estante-ilustracao:has(.livro-lombo) {
     width: min(100%, 420px);
     min-height: 320px;
-    padding: 56px 42px 42px;
+    display: flex;
+    align-items: end;
+    justify-content: center;
     gap: 14px;
+    padding: 56px 42px 42px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 34px;
     box-shadow: var(--shadow-md);
+    position: relative;
 }
 
-.estante-ilustracao:has(.livro-lombo)::after {
+.estante-ilustracao::after {
     content: "";
     position: absolute;
     left: 36px;
@@ -1493,49 +1356,142 @@ input[readonly] {
     }
 }
 
+/* =========================================================
+   NEGOCIAÇÃO DE RESERVAS
+   ========================================================= */
 
-/* Responsividade da ilustração principal */
-@media (max-width: 900px) {
-    .hero-livros {
-        max-width: 100%;
-        min-height: 380px;
-        padding: 36px 24px;
-    }
+.container-estreito {
+    width: min(100% - 32px, 760px);
 }
 
-@media (max-width: 600px) {
-    .hero-livros {
-        min-height: 350px;
-        padding: 30px 20px;
-        border-radius: 22px;
+.bloco-gestao-suave {
+    background: #f8fbf9;
+    border-color: #d9e5dd;
+}
+
+.grupo-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.resumo-reserva {
+    display: grid;
+    gap: 4px;
+    margin: 24px 0;
+    padding: 16px 18px;
+    background: #f5f8f6;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+.resumo-reserva span {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.resumo-reserva strong {
+    color: var(--text);
+    font-size: 1.05rem;
+}
+
+.historico-propostas {
+    min-width: 240px;
+    padding: 16px;
+    background: #f7faf8;
+    border: 1px solid #dbe6df;
+    border-radius: var(--radius-md);
+}
+
+.historico-propostas.compacto {
+    width: 100%;
+    margin-top: 16px;
+}
+
+.historico-propostas > strong {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.historico-propostas ul {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.historico-propostas li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid #e5ece8;
+}
+
+.historico-propostas li:last-child {
+    border-bottom: 0;
+}
+
+.historico-propostas li span {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    text-align: right;
+}
+
+.historico-evento-principal {
+    flex: 1 1 260px;
+}
+
+.status-aguardando_responsavel,
+.status-aguardando_interessado {
+    background: #fff5d8;
+    color: #775b10;
+    border-color: #f1dda5;
+}
+
+.status-cancelada,
+.status-nao_retirada {
+    background: #f8e7e5;
+    color: #8c3e35;
+    border-color: #ecc7c2;
+}
+
+.status-concluida,
+.status-aprovada {
+    background: #e3f2e8;
+    color: #285b3b;
+    border-color: #c4dfcd;
+}
+
+@media (max-width: 700px) {
+    .grupo-acoes {
+        flex-direction: column;
     }
 
-    .circulo-decorativo {
-        width: 230px;
-        height: 230px;
-        top: 35px;
+    .grupo-acoes .botao,
+    .grupo-acoes form,
+    .grupo-acoes form .botao {
+        width: 100%;
     }
 
-    .circulo-decorativo::before {
-        width: 175px;
-        height: 175px;
+    .historico-propostas {
+        width: 100%;
+        min-width: 0;
     }
 
-    .estante-ilustracao:not(:has(.livro-lombo)) {
-        width: 200px;
-        height: 150px;
-        margin-bottom: 26px;
+    .historico-propostas li {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 2px;
     }
 
-    .livro-visual {
-        width: 42px;
-    }
-
-    .livro-verde { height: 108px; }
-    .livro-claro { height: 125px; }
-    .livro-terracota { height: 98px; }
-
-    .hero-destaque-texto {
-        max-width: 260px;
+    .historico-propostas li span {
+        text-align: left;
     }
 }

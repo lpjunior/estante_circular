@@ -6,7 +6,7 @@
         <div class="painel-contexto">
             <span class="etiqueta">Reserva</span>
             <h1>Solicitar retirada</h1>
-            <p>Informe a data em que pretende retirar o exemplar. O responsável precisará aprovar a solicitação.</p>
+            <p>Informe a data em que pretende retirar o exemplar. O responsável poderá aceitar a data ou sugerir uma nova opção para retirada.</p>
             <div class="informacao-destaque">
                 <strong>{{ livro.titulo }}</strong>
                 <p>{{ livro.autor }}</p>
@@ -26,7 +26,7 @@
                     {% for erro in form.data_retirada_prevista.errors %}<span class="erro-campo">{{ erro }}</span>{% endfor %}
                 </div>
                 <div class="acoes-formulario">
-                    <button type="submit" class="botao botao-principal">Enviar solicitação</button>
+                    <button type="submit" class="botao botao-principal">Enviar proposta de data</button>
                     <a href="{% url 'core:meus_interesses' %}" class="botao botao-secundario">Cancelar</a>
                 </div>
             </form>

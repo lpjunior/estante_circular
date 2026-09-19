@@ -46,9 +46,7 @@
                         {% else %}
                             {% if livro.situacao == 'DISPONIVEL' %}
                                 {% if interesse_usuario %}
-                                    <span class="aviso-inline">
-                                        Seu interesse está como <strong>{{ interesse_usuario.get_status_display }}</strong>.
-                                    </span>
+                                    <span class="aviso-inline">Seu interesse está como <strong>{{ interesse_usuario.get_status_display }}</strong>.</span>
                                 {% else %}
                                     <form method="post" action="{% url 'core:demonstrar_interesse' livro.pk %}" class="form-inline">
                                         {% csrf_token %}
@@ -70,7 +68,7 @@
                             <div class="bloco-gestao-cabecalho">
                                 <div>
                                     <span class="etiqueta">Reservas</span>
-                                    <h2>Solicitações pendentes</h2>
+                                    <h2>Propostas aguardando sua resposta</h2>
                                 </div>
                                 <span class="contador">{{ reservas_pendentes|length }}</span>
                             </div>
@@ -79,18 +77,41 @@
                                     <article class="operacao-item">
                                         <div>
                                             <strong>{% if reserva.interesse.interessado.get_full_name %}{{ reserva.interesse.interessado.get_full_name }}{% else %}{{ reserva.interesse.interessado.username }}{% endif %}</strong>
-                                            <span>Retirada solicitada para {{ reserva.data_retirada_prevista|date:"d/m/Y" }}</span>
-                                            <small>Pedido em {{ reserva.data_reserva|date:"d/m/Y H:i" }}</small>
+                                            <span>Retirada proposta para {{ reserva.data_retirada_prevista|date:"d/m/Y" }}</span>
+                                            <small>Solicitação criada em {{ reserva.data_reserva|date:"d/m/Y H:i" }}</small>
                                         </div>
                                         <div class="operacao-acoes">
-                                            <form method="post" action="{% url 'core:aprovar_reserva' reserva.pk %}">
+                                            <form method="post" action="{% url 'core:aceitar_reserva_responsavel' reserva.pk %}">
                                                 {% csrf_token %}
-                                                <button type="submit" class="botao botao-principal botao-compacto">Aprovar</button>
+                                                <button type="submit" class="botao botao-principal botao-compacto">Aceitar data</button>
                                             </form>
-                                            <form method="post" action="{% url 'core:recusar_reserva' reserva.pk %}">
+                                            <a href="{% url 'core:alterar_data_reserva_responsavel' reserva.pk %}" class="botao botao-secundario botao-compacto">Propor outra data</a>
+                                            <form method="post" action="{% url 'core:cancelar_reserva' reserva.pk %}">
                                                 {% csrf_token %}
-                                                <button type="submit" class="botao botao-secundario botao-compacto">Recusar</button>
+                                                <button type="submit" class="botao botao-terciario botao-compacto">Recusar</button>
                                             </form>
+                                        </div>
+                                    </article>
+                                {% endfor %}
+                            </div>
+                        </section>
+                    {% endif %}
+
+                    {% if reservas_aguardando_interessado %}
+                        <section class="bloco-gestao bloco-gestao-suave">
+                            <div class="bloco-gestao-cabecalho">
+                                <div>
+                                    <span class="etiqueta">Negociação</span>
+                                    <h2>Aguardando resposta do interessado</h2>
+                                </div>
+                            </div>
+                            <div class="lista-operacoes">
+                                {% for reserva in reservas_aguardando_interessado %}
+                                    <article class="operacao-item">
+                                        <div>
+                                            <strong>{% if reserva.interesse.interessado.get_full_name %}{{ reserva.interesse.interessado.get_full_name }}{% else %}{{ reserva.interesse.interessado.username }}{% endif %}</strong>
+                                            <span>Nova data proposta: {{ reserva.data_retirada_prevista|date:"d/m/Y" }}</span>
+                                            <small>Aguardando confirmação do interessado.</small>
                                         </div>
                                     </article>
                                 {% endfor %}

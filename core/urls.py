@@ -21,10 +21,40 @@ urlpatterns = [
     path("interesses/<int:id>/aceitar/", views.aceitar_interesse, name="aceitar_interesse"),
     path("interesses/<int:id>/recusar/", views.recusar_interesse, name="recusar_interesse"),
     path("interesses/<int:id>/reservar/", views.solicitar_reserva, name="solicitar_reserva"),
-    path("reservas/<int:id>/aprovar/", views.aprovar_reserva, name="aprovar_reserva"),
+    path(
+        "reservas/<int:id>/aceitar-responsavel/",
+        views.aceitar_reserva_responsavel,
+        name="aceitar_reserva_responsavel",
+    ),
+    path(
+        "reservas/<int:id>/aceitar-interessado/",
+        views.aceitar_reserva_interessado,
+        name="aceitar_reserva_interessado",
+    ),
+    path(
+        "reservas/<int:id>/alterar-data-responsavel/",
+        views.alterar_data_reserva_responsavel,
+        name="alterar_data_reserva_responsavel",
+    ),
+    path(
+        "reservas/<int:id>/alterar-data-interessado/",
+        views.alterar_data_reserva_interessado,
+        name="alterar_data_reserva_interessado",
+    ),
     path("reservas/<int:id>/cancelar/", views.cancelar_reserva, name="cancelar_reserva"),
-    path("reservas/<int:id>/recusar/", views.recusar_reserva, name="recusar_reserva"),
-    path("reservas/<int:id>/nao-retirada/", views.marcar_nao_retirada, name="marcar_nao_retirada"),
-    path("reservas/<int:id>/emprestar/", views.iniciar_emprestimo, name="iniciar_emprestimo"),
-    path("emprestimos/<int:id>/devolver/", views.devolver_livro, name="devolver_livro"),
+    path(
+        "reservas/<int:id>/nao-retirada/",
+        views.marcar_nao_retirada,
+        name="marcar_nao_retirada",
+    ),
+    path(
+        "reservas/<int:id>/emprestar/",
+        views.iniciar_emprestimo,
+        name="iniciar_emprestimo",
+    ),
+    path(
+        "emprestimos/<int:id>/devolver/",
+        views.devolver_livro,
+        name="devolver_livro",
+    ),
 ]
