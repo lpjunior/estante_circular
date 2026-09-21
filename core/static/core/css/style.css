@@ -460,44 +460,140 @@ p {
 }
 
 .estante-ilustracao {
-    width: min(100%, 420px);
-    min-height: 320px;
+    width: min(100%, 430px);
+    min-height: 330px;
     display: flex;
-    align-items: end;
+    align-items: flex-end;
     justify-content: center;
-    gap: 14px;
-    padding: 56px 42px 42px;
-    background: var(--surface);
+    gap: 10px;
+    padding: 64px 46px 52px;
+    background:
+        radial-gradient(circle at 50% 46%, rgba(47, 93, 73, 0.08) 0 34%, transparent 35%),
+        var(--surface);
     border: 1px solid var(--border);
     border-radius: 34px;
     box-shadow: var(--shadow-md);
     position: relative;
+    isolation: isolate;
+    overflow: hidden;
 }
 
+/* O círculo reforça a ideia de circulação, sem competir com os livros. */
+.estante-ilustracao::before {
+    content: "↻";
+    position: absolute;
+    top: 24px;
+    right: 30px;
+    width: 56px;
+    height: 56px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--brand-soft);
+    color: var(--brand);
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    box-shadow: 0 8px 20px rgba(31, 42, 36, 0.08);
+    z-index: 0;
+}
+
+/* Prateleira */
 .estante-ilustracao::after {
     content: "";
     position: absolute;
-    left: 36px;
-    right: 36px;
-    bottom: 36px;
-    height: 13px;
+    left: 34px;
+    right: 34px;
+    bottom: 38px;
+    height: 14px;
     border-radius: 999px;
-    background: #b78f68;
-    box-shadow: 0 8px 16px rgba(75, 53, 35, 0.16);
+    background: #a97852;
+    box-shadow:
+        0 8px 0 #8d6547,
+        0 16px 22px rgba(75, 53, 35, 0.16);
+    z-index: 1;
 }
 
 .livro-lombo {
     display: block;
-    width: 44px;
-    border-radius: 8px 8px 3px 3px;
-    z-index: 1;
+    position: relative;
+    width: 48px;
+    border-radius: 6px 9px 4px 4px;
+    border: 1px solid rgba(31, 42, 36, 0.10);
+    box-shadow:
+        inset 5px 0 0 rgba(255, 255, 255, 0.10),
+        5px 7px 12px rgba(31, 42, 36, 0.10);
+    transform-origin: bottom center;
+    z-index: 2;
 }
 
-.l1 { height: 154px; background: #315c4b; }
-.l2 { height: 206px; background: #b58661; }
-.l3 { height: 184px; background: #7a8d80; }
-.l4 { height: 222px; background: #d0b27b; }
-.l5 { height: 168px; background: #496f61; }
+/* Faixa de lombada, para deixar a leitura visual inequívoca como livro. */
+.livro-lombo::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    right: 7px;
+    top: 18px;
+    height: 3px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.68);
+    box-shadow: 0 9px 0 rgba(255, 255, 255, 0.34);
+}
+
+.livro-lombo::after {
+    content: "";
+    position: absolute;
+    left: 7px;
+    right: 7px;
+    bottom: 16px;
+    height: 2px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.30);
+}
+
+.l1 {
+    height: 150px;
+    background: #315c4b;
+    transform: rotate(-2deg);
+}
+
+.l2 {
+    height: 202px;
+    width: 52px;
+    background: #b58661;
+    transform: rotate(1deg);
+}
+
+.l3 {
+    height: 178px;
+    background: #71877a;
+    transform: rotate(-1deg);
+}
+
+.l4 {
+    height: 218px;
+    width: 54px;
+    background: #c9a96f;
+    transform: rotate(2deg);
+}
+
+.l5 {
+    height: 164px;
+    background: #496f61;
+    transform: rotate(-1deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .estante-ilustracao::before {
+        animation: circulacao-suave 10s linear infinite;
+    }
+}
+
+@keyframes circulacao-suave {
+    to {
+        transform: rotate(360deg);
+    }
+}
 
 /* Seções e páginas */
 
