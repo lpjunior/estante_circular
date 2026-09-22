@@ -1,211 +1,256 @@
 {% extends 'core/base.html' %}
-{% block title %}{{ livro.titulo }} | Estante Circular{% endblock %}
+{% block title %}
+  {{ livro.titulo }} | Estante Circular
+{% endblock %}
 {% block content %}
-<section class="pagina">
+  <section class="pagina">
     <div class="container">
-        <a href="{% url 'core:catalogo' %}" class="link-voltar">Voltar ao catálogo</a>
+      <a href="{% url 'core:catalogo' %}" class="link-voltar">Voltar ao catálogo</a>
 
-        <div class="detalhes-livro">
-            <aside class="detalhes-capa">
-                <div class="livro-capa-grande" aria-hidden="true">
-                    <span>{{ livro.titulo|slice:":1"|upper }}</span>
-                </div>
-            </aside>
+      <div class="detalhes-livro">
+        <aside class="detalhes-capa">
+          <div class="livro-capa-grande">
+            {% if livro.capa %}
+              <img src="{{ livro.capa.url }}" alt="Capa do livro {{ livro.titulo }}" class="imagem-capa imagem-capa-grande" />
+            {% else %}
+              <span aria-hidden="true">{{ livro.titulo|slice:':1'|upper }}</span>
+            {% endif %}
+          </div>
+        </aside>
 
-            <div class="detalhes-conteudo">
-                <div class="card-meta">
-                    <span class="genero">{{ livro.genero_display }}</span>
-                    <span class="status-livro status-{{ livro.situacao|lower }}">{{ livro.get_situacao_display }}</span>
-                </div>
+        <div class="detalhes-conteudo">
+          <div class="card-meta">
+            <span class="genero">{{ livro.genero_display }}</span>
+            <span class="status-livro status-{{ livro.situacao|lower }}">{{ livro.get_situacao_display }}</span>
+          </div>
 
-                <h1>{{ livro.titulo }}</h1>
-                <p class="detalhes-autor">{{ livro.autor }}</p>
+          <h1>{{ livro.titulo }}</h1>
+          <p class="detalhes-autor">{{ livro.autor }}</p>
 
-                <div class="detalhes-informacoes">
-                    <div><span>Conservação</span><strong>{{ livro.estado_conservacao_display }}</strong></div>
-                    <div>
-                        <span>Disponibilizado por</span>
-                        <strong>{% if livro.responsavel.get_full_name %}{{ livro.responsavel.get_full_name }}{% else %}{{ livro.responsavel.username }}{% endif %}</strong>
-                    </div>
-                    <div><span>Situação</span><strong>{{ livro.get_situacao_display }}</strong></div>
-                </div>
-
-                <div class="detalhes-descricao">
-                    <h2>Sobre este exemplar</h2>
-                    <p>{{ livro.descricao|linebreaksbr }}</p>
-                </div>
-
-                <div class="detalhes-acoes">
-                    {% if request.user.is_authenticated %}
-                        {% if request.user == livro.responsavel %}
-                            {% if livro.situacao == 'DISPONIVEL' %}
-                                <a href="{% url 'core:editar_livro' livro.pk %}" class="botao botao-secundario">Editar</a>
-                                <a href="{% url 'core:excluir_livro' livro.pk %}" class="botao botao-perigo">Remover</a>
-                            {% endif %}
-                            <a href="{% url 'core:historico_livro' livro.pk %}" class="botao botao-terciario">Ver histórico</a>
-                        {% else %}
-                            {% if livro.situacao == 'DISPONIVEL' %}
-                                {% if interesse_usuario %}
-                                    <span class="aviso-inline">Seu interesse está como <strong>{{ interesse_usuario.get_status_display }}</strong>.</span>
-                                {% else %}
-                                    <form method="post" action="{% url 'core:demonstrar_interesse' livro.pk %}" class="form-inline">
-                                        {% csrf_token %}
-                                        <button type="submit" class="botao botao-principal">Tenho interesse</button>
-                                    </form>
-                                {% endif %}
-                            {% else %}
-                                <span class="aviso-inline">Este exemplar não está disponível para novos interesses no momento.</span>
-                            {% endif %}
-                        {% endif %}
-                    {% else %}
-                        <a href="{% url 'core:login' %}?next={{ request.path|urlencode }}" class="botao botao-principal">Entrar para demonstrar interesse</a>
-                    {% endif %}
-                </div>
-
-                {% if request.user == livro.responsavel %}
-                    {% if reservas_pendentes %}
-                        <section class="bloco-gestao">
-                            <div class="bloco-gestao-cabecalho">
-                                <div>
-                                    <span class="etiqueta">Reservas</span>
-                                    <h2>Propostas aguardando sua resposta</h2>
-                                </div>
-                                <span class="contador">{{ reservas_pendentes|length }}</span>
-                            </div>
-                            <div class="lista-operacoes">
-                                {% for reserva in reservas_pendentes %}
-                                    <article class="operacao-item">
-                                        <div>
-                                            <strong>{% if reserva.interesse.interessado.get_full_name %}{{ reserva.interesse.interessado.get_full_name }}{% else %}{{ reserva.interesse.interessado.username }}{% endif %}</strong>
-                                            <span>Retirada proposta para {{ reserva.data_retirada_prevista|date:"d/m/Y" }}</span>
-                                            <small>Solicitação criada em {{ reserva.data_reserva|date:"d/m/Y H:i" }}</small>
-                                        </div>
-                                        <div class="operacao-acoes">
-                                            <form method="post" action="{% url 'core:aceitar_reserva_responsavel' reserva.pk %}">
-                                                {% csrf_token %}
-                                                <button type="submit" class="botao botao-principal botao-compacto">Aceitar data</button>
-                                            </form>
-                                            <a href="{% url 'core:alterar_data_reserva_responsavel' reserva.pk %}" class="botao botao-secundario botao-compacto">Propor outra data</a>
-                                            <form method="post" action="{% url 'core:cancelar_reserva' reserva.pk %}">
-                                                {% csrf_token %}
-                                                <button type="submit" class="botao botao-terciario botao-compacto">Recusar</button>
-                                            </form>
-                                        </div>
-                                    </article>
-                                {% endfor %}
-                            </div>
-                        </section>
-                    {% endif %}
-
-                    {% if reservas_aguardando_interessado %}
-                        <section class="bloco-gestao bloco-gestao-suave">
-                            <div class="bloco-gestao-cabecalho">
-                                <div>
-                                    <span class="etiqueta">Negociação</span>
-                                    <h2>Aguardando resposta do interessado</h2>
-                                </div>
-                            </div>
-                            <div class="lista-operacoes">
-                                {% for reserva in reservas_aguardando_interessado %}
-                                    <article class="operacao-item">
-                                        <div>
-                                            <strong>{% if reserva.interesse.interessado.get_full_name %}{{ reserva.interesse.interessado.get_full_name }}{% else %}{{ reserva.interesse.interessado.username }}{% endif %}</strong>
-                                            <span>Nova data proposta: {{ reserva.data_retirada_prevista|date:"d/m/Y" }}</span>
-                                            <small>Aguardando confirmação do interessado.</small>
-                                        </div>
-                                    </article>
-                                {% endfor %}
-                            </div>
-                        </section>
-                    {% endif %}
-
-                    {% if reserva_ativa %}
-                        <section class="bloco-gestao destaque-operacional">
-                            <div>
-                                <span class="status-livro status-reservado">Reserva aprovada</span>
-                                <h2>Aguardando retirada</h2>
-                                <p>
-                                    Reservado para
-                                    <strong>{% if reserva_ativa.interesse.interessado.get_full_name %}{{ reserva_ativa.interesse.interessado.get_full_name }}{% else %}{{ reserva_ativa.interesse.interessado.username }}{% endif %}</strong>.
-                                    Retirada prevista para {{ reserva_ativa.data_retirada_prevista|date:"d/m/Y" }}.
-                                </p>
-                            </div>
-                            <div class="operacao-acoes">
-                                <form method="post" action="{% url 'core:iniciar_emprestimo' reserva_ativa.pk %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="botao botao-principal">Confirmar entrega</button>
-                                </form>
-                                <form method="post" action="{% url 'core:cancelar_reserva' reserva_ativa.pk %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="botao botao-secundario">Cancelar reserva</button>
-                                </form>
-                                {% now "Y-m-d" as hoje %}
-                                {% if reserva_ativa.data_retirada_prevista|date:"Y-m-d" < hoje %}
-                                    <form method="post" action="{% url 'core:marcar_nao_retirada' reserva_ativa.pk %}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="botao botao-terciario">Registrar não retirada</button>
-                                    </form>
-                                {% endif %}
-                            </div>
-                        </section>
-                    {% endif %}
-
-                    {% if emprestimo_ativo %}
-                        <section class="bloco-gestao destaque-operacional">
-                            <div>
-                                <span class="status-livro status-emprestado">Empréstimo ativo</span>
-                                <h2>Exemplar em circulação</h2>
-                                <p>
-                                    Com
-                                    <strong>{% if emprestimo_ativo.reserva.interesse.interessado.get_full_name %}{{ emprestimo_ativo.reserva.interesse.interessado.get_full_name }}{% else %}{{ emprestimo_ativo.reserva.interesse.interessado.username }}{% endif %}</strong>
-                                    desde {{ emprestimo_ativo.emprestado_em|date:"d/m/Y H:i" }}.
-                                </p>
-                            </div>
-                            <form method="post" action="{% url 'core:devolver_livro' emprestimo_ativo.pk %}">
-                                {% csrf_token %}
-                                <button type="submit" class="botao botao-principal">Confirmar devolução</button>
-                            </form>
-                        </section>
-                    {% endif %}
-
-                    <section class="bloco-gestao">
-                        <div class="bloco-gestao-cabecalho">
-                            <div>
-                                <span class="etiqueta">Interesses</span>
-                                <h2>Pessoas interessadas</h2>
-                            </div>
-                        </div>
-                        {% if interesses %}
-                            <div class="lista-operacoes">
-                                {% for interesse in interesses %}
-                                    <article class="operacao-item">
-                                        <div>
-                                            <strong>{% if interesse.interessado.get_full_name %}{{ interesse.interessado.get_full_name }}{% else %}{{ interesse.interessado.username }}{% endif %}</strong>
-                                            <span>Registrado em {{ interesse.data_interesse|date:"d/m/Y H:i" }}</span>
-                                            <small class="status-texto status-{{ interesse.status|lower }}">{{ interesse.get_status_display }}</small>
-                                        </div>
-                                        {% if interesse.status == 'PENDENTE' %}
-                                            <div class="operacao-acoes">
-                                                <form method="post" action="{% url 'core:aceitar_interesse' interesse.pk %}">
-                                                    {% csrf_token %}
-                                                    <button type="submit" class="botao botao-principal botao-compacto">Aceitar</button>
-                                                </form>
-                                                <form method="post" action="{% url 'core:recusar_interesse' interesse.pk %}">
-                                                    {% csrf_token %}
-                                                    <button type="submit" class="botao botao-secundario botao-compacto">Recusar</button>
-                                                </form>
-                                            </div>
-                                        {% endif %}
-                                    </article>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <p class="texto-apoio">Ainda não há manifestações de interesse para este exemplar.</p>
-                        {% endif %}
-                    </section>
-                {% endif %}
+          <div class="detalhes-informacoes">
+            <div>
+              <span>Conservação</span><strong>{{ livro.estado_conservacao_display }}</strong>
             </div>
+            <div>
+              <span>Disponibilizado por</span>
+              <strong>
+                {% if livro.responsavel.get_full_name %}
+                  {{ livro.responsavel.get_full_name }}
+                {% else %}
+                  {{ livro.responsavel.username }}
+                {% endif %}
+              </strong>
+            </div>
+            <div>
+              <span>Situação</span><strong>{{ livro.get_situacao_display }}</strong>
+            </div>
+          </div>
+
+          <div class="detalhes-descricao">
+            <h2>Sobre este exemplar</h2>
+            <p>{{ livro.descricao|linebreaksbr }}</p>
+          </div>
+
+          <div class="detalhes-acoes">
+            {% if request.user.is_authenticated %}
+              {% if request.user == livro.responsavel %}
+                {% if livro.situacao == 'DISPONIVEL' %}
+                  <a href="{% url 'core:editar_livro' livro.pk %}" class="botao botao-secundario">Editar</a>
+                  <a href="{% url 'core:excluir_livro' livro.pk %}" class="botao botao-perigo">Remover</a>
+                {% endif %}
+                <a href="{% url 'core:historico_livro' livro.pk %}" class="botao botao-terciario">Ver histórico</a>
+              {% else %}
+                {% if livro.situacao == 'DISPONIVEL' %}
+                  {% if interesse_usuario %}
+                    <span class="aviso-inline">Seu interesse está como <strong>{{ interesse_usuario.get_status_display }}</strong>.</span>
+                  {% else %}
+                    <form method="post" action="{% url 'core:demonstrar_interesse' livro.pk %}" class="form-inline">
+                      {% csrf_token %}
+                      <button type="submit" class="botao botao-principal">Tenho interesse</button>
+                    </form>
+                  {% endif %}
+                {% else %}
+                  <span class="aviso-inline">Este exemplar não está disponível para novos interesses no momento.</span>
+                {% endif %}
+              {% endif %}
+            {% else %}
+              <a href="{% url 'core:login' %}?next={{ request.path|urlencode }}" class="botao botao-principal">Entrar para demonstrar interesse</a>
+            {% endif %}
+          </div>
+
+          {% if request.user == livro.responsavel %}
+            {% if reservas_pendentes %}
+              <section class="bloco-gestao">
+                <div class="bloco-gestao-cabecalho">
+                  <div>
+                    <span class="etiqueta">Reservas</span>
+                    <h2>Propostas aguardando sua resposta</h2>
+                  </div>
+                  <span class="contador">{{ reservas_pendentes|length }}</span>
+                </div>
+                <div class="lista-operacoes">
+                  {% for reserva in reservas_pendentes %}
+                    <article class="operacao-item">
+                      <div>
+                        <strong>
+                          {% if reserva.interesse.interessado.get_full_name %}
+                            {{ reserva.interesse.interessado.get_full_name }}
+                          {% else %}
+                            {{ reserva.interesse.interessado.username }}
+                          {% endif %}
+                        </strong>
+                        <span>Retirada proposta para {{ reserva.data_retirada_prevista|date:'d/m/Y' }}</span>
+                        <small>Solicitação criada em {{ reserva.data_reserva|date:'d/m/Y H:i' }}</small>
+                      </div>
+                      <div class="operacao-acoes">
+                        <form method="post" action="{% url 'core:aceitar_reserva_responsavel' reserva.pk %}">
+                          {% csrf_token %}
+                          <button type="submit" class="botao botao-principal botao-compacto">Aceitar data</button>
+                        </form>
+                        <a href="{% url 'core:alterar_data_reserva_responsavel' reserva.pk %}" class="botao botao-secundario botao-compacto">Propor outra data</a>
+                        <form method="post" action="{% url 'core:cancelar_reserva' reserva.pk %}">
+                          {% csrf_token %}
+                          <button type="submit" class="botao botao-terciario botao-compacto">Recusar</button>
+                        </form>
+                      </div>
+                    </article>
+                  {% endfor %}
+                </div>
+              </section>
+            {% endif %}
+
+            {% if reservas_aguardando_interessado %}
+              <section class="bloco-gestao bloco-gestao-suave">
+                <div class="bloco-gestao-cabecalho">
+                  <div>
+                    <span class="etiqueta">Negociação</span>
+                    <h2>Aguardando resposta do interessado</h2>
+                  </div>
+                </div>
+                <div class="lista-operacoes">
+                  {% for reserva in reservas_aguardando_interessado %}
+                    <article class="operacao-item">
+                      <div>
+                        <strong>
+                          {% if reserva.interesse.interessado.get_full_name %}
+                            {{ reserva.interesse.interessado.get_full_name }}
+                          {% else %}
+                            {{ reserva.interesse.interessado.username }}
+                          {% endif %}
+                        </strong>
+                        <span>Nova data proposta: {{ reserva.data_retirada_prevista|date:'d/m/Y' }}</span>
+                        <small>Aguardando confirmação do interessado.</small>
+                      </div>
+                    </article>
+                  {% endfor %}
+                </div>
+              </section>
+            {% endif %}
+
+            {% if reserva_ativa %}
+              <section class="bloco-gestao destaque-operacional">
+                <div>
+                  <span class="status-livro status-reservado">Reserva aprovada</span>
+                  <h2>Aguardando retirada</h2>
+                  <p>
+                    Reservado para
+                    <strong>
+                      {% if reserva_ativa.interesse.interessado.get_full_name %}
+                        {{ reserva_ativa.interesse.interessado.get_full_name }}
+                      {% else %}
+                        {{ reserva_ativa.interesse.interessado.username }}
+                      {% endif %}
+                    </strong>. Retirada prevista para {{ reserva_ativa.data_retirada_prevista|date:'d/m/Y' }}.
+                  </p>
+                </div>
+                <div class="operacao-acoes">
+                  <form method="post" action="{% url 'core:iniciar_emprestimo' reserva_ativa.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="botao botao-principal">Confirmar entrega</button>
+                  </form>
+                  <form method="post" action="{% url 'core:cancelar_reserva' reserva_ativa.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="botao botao-secundario">Cancelar reserva</button>
+                  </form>
+                  {% now 'Y-m-d' as hoje %}
+                  {% if reserva_ativa.data_retirada_prevista|date:'Y-m-d' < hoje %}
+                    <form method="post" action="{% url 'core:marcar_nao_retirada' reserva_ativa.pk %}">
+                      {% csrf_token %}
+                      <button type="submit" class="botao botao-terciario">Registrar não retirada</button>
+                    </form>
+                  {% endif %}
+                </div>
+              </section>
+            {% endif %}
+
+            {% if emprestimo_ativo %}
+              <section class="bloco-gestao destaque-operacional">
+                <div>
+                  <span class="status-livro status-emprestado">Empréstimo ativo</span>
+                  <h2>Exemplar em circulação</h2>
+                  <p>
+                    Com
+                    <strong>
+                      {% if emprestimo_ativo.reserva.interesse.interessado.get_full_name %}
+                        {{ emprestimo_ativo.reserva.interesse.interessado.get_full_name }}
+                      {% else %}
+                        {{ emprestimo_ativo.reserva.interesse.interessado.username }}
+                      {% endif %}
+                    </strong>
+                    desde {{ emprestimo_ativo.emprestado_em|date:'d/m/Y H:i' }}.
+                  </p>
+                </div>
+                <form method="post" action="{% url 'core:devolver_livro' emprestimo_ativo.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="botao botao-principal">Confirmar devolução</button>
+                </form>
+              </section>
+            {% endif %}
+
+            <section class="bloco-gestao">
+              <div class="bloco-gestao-cabecalho">
+                <div>
+                  <span class="etiqueta">Interesses</span>
+                  <h2>Pessoas interessadas</h2>
+                </div>
+              </div>
+              {% if interesses %}
+                <div class="lista-operacoes">
+                  {% for interesse in interesses %}
+                    <article class="operacao-item">
+                      <div>
+                        <strong>
+                          {% if interesse.interessado.get_full_name %}
+                            {{ interesse.interessado.get_full_name }}
+                          {% else %}
+                            {{ interesse.interessado.username }}
+                          {% endif %}
+                        </strong>
+                        <span>Registrado em {{ interesse.data_interesse|date:'d/m/Y H:i' }}</span>
+                        <small class="status-texto status-{{ interesse.status|lower }}">{{ interesse.get_status_display }}</small>
+                      </div>
+                      {% if interesse.status == 'PENDENTE' %}
+                        <div class="operacao-acoes">
+                          <form method="post" action="{% url 'core:aceitar_interesse' interesse.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="botao botao-principal botao-compacto">Aceitar</button>
+                          </form>
+                          <form method="post" action="{% url 'core:recusar_interesse' interesse.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="botao botao-secundario botao-compacto">Recusar</button>
+                          </form>
+                        </div>
+                      {% endif %}
+                    </article>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <p class="texto-apoio">Ainda não há manifestações de interesse para este exemplar.</p>
+              {% endif %}
+            </section>
+          {% endif %}
         </div>
+      </div>
     </div>
-</section>
+  </section>
 {% endblock %}

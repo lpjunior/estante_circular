@@ -5,10 +5,23 @@
     <div class="container">
         <a href="{% url 'core:detalhes_livro' livro.pk %}" class="link-voltar">Voltar aos detalhes</a>
 
-        <header class="cabecalho-pagina">
-            <span class="etiqueta">Histórico de circulação</span>
-            <h1>{{ livro.titulo }}</h1>
-            <p>Consulte interesses, negociações de retirada, reservas, empréstimos e devoluções associados a este exemplar.</p>
+        <header class="cabecalho-pagina cabecalho-livro-com-capa">
+            <div class="capa-livro capa-livro-mini">
+                    {% if livro.capa %}
+                        <img
+                            src="{{ livro.capa.url }}"
+                            alt="Capa do livro {{ livro.titulo }}"
+                            class="imagem-capa"
+                        >
+                    {% else %}
+                        <span aria-hidden="true">{{ livro.titulo|slice:":1"|upper }}</span>
+                    {% endif %}
+                </div>
+            <div>
+                <span class="etiqueta">Histórico de circulação</span>
+                <h1>{{ livro.titulo }}</h1>
+                <p>Consulte interesses, negociações de retirada, reservas, empréstimos e devoluções associados a este exemplar.</p>
+            </div>
         </header>
 
         <div class="historico-resumo">

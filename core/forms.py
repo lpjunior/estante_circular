@@ -19,13 +19,14 @@ class LivroForm(forms.ModelForm):
 
     class Meta:
         model = Livro
-        fields = ("titulo", "autor", "genero", "estado_conservacao", "descricao")
-        labels = {
+        fields = ("titulo", "autor", "genero", "estado_conservacao", "descricao", "capa")
+        labels = {  # noqa: RUF012
             "titulo": "Título do livro",
             "autor": "Autor",
             "descricao": "Descrição",
+            "capa": "Capa do livro",
         }
-        widgets = {
+        widgets = {  # noqa: RUF012
             "titulo": forms.TextInput(
                 attrs={"placeholder": "Ex.: O Hobbit", "autocomplete": "off"}
             ),
@@ -39,6 +40,11 @@ class LivroForm(forms.ModelForm):
                         "relevante sobre este exemplar."
                     ),
                     "rows": 6,
+                }
+            ),
+            "capa": forms.FileInput(
+                attrs={
+                    "accept": "image/*",
                 }
             ),
         }

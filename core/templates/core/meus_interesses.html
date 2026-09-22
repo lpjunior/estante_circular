@@ -13,11 +13,24 @@
             <div class="lista-interesses-pessoal">
                 {% for interesse in interesses %}
                     <article class="card-gestao">
-                        <div class="card-gestao-topo">
-                            <div>
-                                <span class="genero">{{ interesse.livro.genero_display }}</span>
-                                <h2>{{ interesse.livro.titulo }}</h2>
-                                <p>{{ interesse.livro.autor }}</p>
+                        <div class="card-gestao-topo card-gestao-topo-com-capa">
+                            <div class="livro-identificacao-com-capa">
+                                <div class="capa-livro capa-livro-compacta">
+                                {% if interesse.livro.capa %}
+                                    <img
+                                        src="{{ interesse.livro.capa.url }}"
+                                        alt="Capa do livro {{ interesse.livro.titulo }}"
+                                        class="imagem-capa"
+                                    >
+                                {% else %}
+                                    <span aria-hidden="true">{{ interesse.livro.titulo|slice:":1"|upper }}</span>
+                                {% endif %}
+                            </div>
+                                <div>
+                                    <span class="genero">{{ interesse.livro.genero_display }}</span>
+                                    <h2>{{ interesse.livro.titulo }}</h2>
+                                    <p>{{ interesse.livro.autor }}</p>
+                                </div>
                             </div>
                             <span class="status-interesse status-{{ interesse.status|lower }}">{{ interesse.get_status_display }}</span>
                         </div>

@@ -7,9 +7,22 @@
             <span class="etiqueta">Gerenciar exemplar</span>
             <h1>Editar informações</h1>
             <p>Mantenha os dados do exemplar atualizados para oferecer informações claras a outros leitores.</p>
-            <div class="informacao-destaque">
-                <strong>{{ livro.titulo }}</strong>
-                <p>As alterações passam a valer imediatamente no catálogo.</p>
+            <div class="informacao-destaque informacao-livro-com-capa">
+                <div class="capa-livro capa-livro-mini">
+                    {% if livro.capa %}
+                        <img
+                            src="{{ livro.capa.url }}"
+                            alt="Capa do livro {{ livro.titulo }}"
+                            class="imagem-capa"
+                        >
+                    {% else %}
+                        <span aria-hidden="true">{{ livro.titulo|slice:":1"|upper }}</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <strong>{{ livro.titulo }}</strong>
+                    <p>As alterações passam a valer imediatamente no catálogo.</p>
+                </div>
             </div>
         </div>
 
@@ -18,7 +31,7 @@
                 <h2>Informações do livro</h2>
                 <p>Revise os dados e salve apenas o que precisar ser alterado.</p>
             </div>
-            <form method="post" novalidate>
+            <form method="post" novalidate enctype="multipart/form-data">
                 {% csrf_token %}
                 {% include 'core/partials/form_livro.html' %}
                 <div class="acoes-formulario">

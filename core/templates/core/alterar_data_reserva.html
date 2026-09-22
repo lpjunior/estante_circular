@@ -16,9 +16,23 @@
                 </p>
             </header>
 
-            <div class="resumo-reserva">
-                <span>Livro</span>
-                <strong>{{ livro.titulo }}</strong>
+            <div class="resumo-reserva resumo-reserva-com-capa">
+                <div class="capa-livro capa-livro-mini">
+                    {% if livro.capa %}
+                        <img
+                            src="{{ livro.capa.url }}"
+                            alt="Capa do livro {{ livro.titulo }}"
+                            class="imagem-capa"
+                        >
+                    {% else %}
+                        <span aria-hidden="true">{{ livro.titulo|slice:":1"|upper }}</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <span>Livro</span>
+                    <strong>{{ livro.titulo }}</strong>
+                    <p>{{ livro.autor }}</p>
+                </div>
             </div>
 
             <form method="post" class="formulario-padrao">

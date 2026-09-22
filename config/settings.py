@@ -124,6 +124,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "cloudinary",
     "core",
 ]
 
@@ -266,3 +267,10 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 LOGIN_URL = 'core:login'
 LOGIN_REDIRECT_URL = 'core:index'
 LOGOUT_REDIRECT_URL = 'core:index'
+
+
+# ============================================================
+# IMAGE STORAGE
+# ============================================================
+
+CLOUDINARY_URL= os.getenv("CLOUDINARY_URL")

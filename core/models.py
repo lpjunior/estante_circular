@@ -1,3 +1,4 @@
+from cloudinary.models import CloudinaryField
 from django.conf import settings
 from django.db import models
 
@@ -42,6 +43,13 @@ class Livro(models.Model):
         max_length=20,
         choices=Situacao.choices,
         default=Situacao.DISPONIVEL,
+    )
+
+    capa = CloudinaryField(
+        "capa",
+        resource_type="image",
+        blank=True,
+        null=True,
     )
 
     @property

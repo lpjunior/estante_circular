@@ -41,9 +41,7 @@ def index(request: HttpRequest) -> HttpResponse:
 def catalogo(request: HttpRequest) -> HttpResponse:
     termo_busca = request.GET.get("busca", "").strip()
     livros = (
-        Livro.objects.filter(ativo=True)
-        .select_related("responsavel")
-        .order_by("-pk")
+        Livro.objects.filter(ativo=True).select_related("responsavel").order_by("-pk")
     )
     if termo_busca:
         livros = livros.filter(
@@ -76,9 +74,8 @@ def detalhes_livro(request: HttpRequest, id: int) -> HttpResponse:
 
     if request.user.is_authenticated:
         if livro.responsavel == request.user:
-            interesses = (
-                livro.interesses.select_related("interessado")
-                .order_by("data_interesse")
+            interesses = livro.interesses.select_related("interessado").order_by(
+                "data_interesse"
             )
             reservas_pendentes = (
                 Reserva.objects.filter(
@@ -99,10 +96,9 @@ def detalhes_livro(request: HttpRequest, id: int) -> HttpResponse:
                 .order_by("data_retirada_prevista")
             )
         else:
-            interesse_usuario = (
-                Interesse.objects.filter(livro=livro, interessado=request.user)
-                .first()
-            )
+            interesse_usuario = Interesse.objects.filter(
+                livro=livro, interessado=request.user
+            ).first()
 
     reserva_ativa = (
         Reserva.objects.filter(
@@ -214,15 +210,18 @@ def logout_view(request: HttpRequest) -> HttpResponse:
 
 @login_required
 def disponibilizar_livro(request: HttpRequest) -> HttpResponse:
-    form = LivroForm(request.POST or None)
+    form = LivroForm(request.POST or None, request.FILES or None)
     if request.method == "POST" and form.is_valid():
         livro = form.save(commit=False)
         livro.responsavel = request.user
         livro.ativo = True
         livro.situacao = Livro.Situacao.DISPONIVEL
         livro.save()
+
         messages.success(request, "Livro disponibilizado com sucesso.")
+
         return redirect("core:detalhes_livro", id=livro.pk)
+
     return render(request, "core/disponibilizar_livro.html", {"form": form})
 
 
@@ -240,7 +239,7 @@ def editar_livro(request: HttpRequest, id: int) -> HttpResponse:
         )
         return redirect("core:detalhes_livro", id=livro.pk)
 
-    form = LivroForm(request.POST or None, instance=livro)
+    form = LivroForm(request.POST or None, request.FILES or None, instance=livro)
     if request.method == "POST" and form.is_valid():
         form.save()
         messages.success(request, "Livro atualizado com sucesso.")
@@ -361,9 +360,7 @@ def meus_interesses(request: HttpRequest) -> HttpResponse:
 @login_required
 def solicitar_reserva(request: HttpRequest, id: int) -> HttpResponse:
     interesse = get_object_or_404(
-        Interesse.objects.select_related(
-            "livro", "livro__responsavel", "interessado"
-        ),
+        Interesse.objects.select_related("livro", "livro__responsavel", "interessado"),
         pk=id,
     )
     livro = interesse.livro
@@ -373,7 +370,9 @@ def solicitar_reserva(request: HttpRequest, id: int) -> HttpResponse:
         messages.warning(request, "Somente interesses aceitos podem gerar uma reserva.")
         return redirect("core:meus_interesses")
     if not livro.ativo or livro.situacao != Livro.Situacao.DISPONIVEL:
-        messages.warning(request, "Este livro não está disponível para reserva neste momento.")
+        messages.warning(
+            request, "Este livro não está disponível para reserva neste momento."
+        )
         return redirect("core:meus_interesses")
 
     if Reserva.objects.filter(
@@ -395,7 +394,9 @@ def solicitar_reserva(request: HttpRequest, id: int) -> HttpResponse:
                 not livro_bloqueado.ativo
                 or livro_bloqueado.situacao != Livro.Situacao.DISPONIVEL
             ):
-                messages.warning(request, "O livro deixou de estar disponível para reserva.")
+                messages.warning(
+                    request, "O livro deixou de estar disponível para reserva."
+                )
                 return redirect("core:meus_interesses")
 
             reserva = form.save(commit=False)
@@ -462,8 +463,13 @@ def aceitar_reserva_responsavel(request: HttpRequest, id: int) -> HttpResponse:
         if reserva.status != Reserva.Status.AGUARDANDO_RESPONSAVEL:
             messages.warning(request, "Esta reserva não está aguardando sua resposta.")
             return redirect("core:detalhes_livro", id=livro.pk)
-        if not reserva.data_retirada_prevista or reserva.data_retirada_prevista < timezone.localdate():
-            messages.warning(request, "A data proposta já passou. Informe uma nova data.")
+        if (
+            not reserva.data_retirada_prevista
+            or reserva.data_retirada_prevista < timezone.localdate()
+        ):
+            messages.warning(
+                request, "A data proposta já passou. Informe uma nova data."
+            )
             return redirect("core:detalhes_livro", id=livro.pk)
         if not livro.ativo or livro.situacao != Livro.Situacao.DISPONIVEL:
             messages.warning(request, "Este livro não está mais disponível.")
@@ -490,8 +496,13 @@ def aceitar_reserva_interessado(request: HttpRequest, id: int) -> HttpResponse:
         if reserva.status != Reserva.Status.AGUARDANDO_INTERESSADO:
             messages.warning(request, "Esta reserva não está aguardando sua resposta.")
             return redirect("core:meus_interesses")
-        if not reserva.data_retirada_prevista or reserva.data_retirada_prevista < timezone.localdate():
-            messages.warning(request, "A data proposta já passou. Informe uma nova data.")
+        if (
+            not reserva.data_retirada_prevista
+            or reserva.data_retirada_prevista < timezone.localdate()
+        ):
+            messages.warning(
+                request, "A data proposta já passou. Informe uma nova data."
+            )
             return redirect("core:meus_interesses")
         if not livro.ativo or livro.situacao != Livro.Situacao.DISPONIVEL:
             messages.warning(request, "Este livro não está mais disponível.")
@@ -522,7 +533,10 @@ def _registrar_nova_proposta(
 def alterar_data_reserva_responsavel(request: HttpRequest, id: int) -> HttpResponse:
     reserva = get_object_or_404(
         Reserva.objects.select_related(
-            "interesse", "interesse__livro", "interesse__livro__responsavel", "interesse__interessado"
+            "interesse",
+            "interesse__livro",
+            "interesse__livro__responsavel",
+            "interesse__interessado",
         ),
         pk=id,
     )
@@ -543,12 +557,16 @@ def alterar_data_reserva_responsavel(request: HttpRequest, id: int) -> HttpRespo
     if request.method == "POST" and form.is_valid():
         nova_data = form.cleaned_data["data_retirada"]
         if nova_data == reserva.data_retirada_prevista:
-            form.add_error("data_retirada", "Informe uma data diferente da proposta atual.")
+            form.add_error(
+                "data_retirada", "Informe uma data diferente da proposta atual."
+            )
         else:
             with transaction.atomic():
                 reserva = Reserva.objects.select_for_update().get(pk=reserva.pk)
                 if reserva.status != Reserva.Status.AGUARDANDO_RESPONSAVEL:
-                    messages.warning(request, "A reserva foi atualizada por outra operação.")
+                    messages.warning(
+                        request, "A reserva foi atualizada por outra operação."
+                    )
                     return redirect("core:detalhes_livro", id=livro.pk)
                 _registrar_nova_proposta(
                     reserva,
@@ -591,12 +609,16 @@ def alterar_data_reserva_interessado(request: HttpRequest, id: int) -> HttpRespo
     if request.method == "POST" and form.is_valid():
         nova_data = form.cleaned_data["data_retirada"]
         if nova_data == reserva.data_retirada_prevista:
-            form.add_error("data_retirada", "Informe uma data diferente da proposta atual.")
+            form.add_error(
+                "data_retirada", "Informe uma data diferente da proposta atual."
+            )
         else:
             with transaction.atomic():
                 reserva = Reserva.objects.select_for_update().get(pk=reserva.pk)
                 if reserva.status != Reserva.Status.AGUARDANDO_INTERESSADO:
-                    messages.warning(request, "A reserva foi atualizada por outra operação.")
+                    messages.warning(
+                        request, "A reserva foi atualizada por outra operação."
+                    )
                     return redirect("core:meus_interesses")
                 _registrar_nova_proposta(
                     reserva,
@@ -652,9 +674,7 @@ def cancelar_reserva(request: HttpRequest, id: int) -> HttpResponse:
         reserva.status = Reserva.Status.CANCELADA
         reserva.cancelada_por = request.user
         reserva.data_encerramento = timezone.now()
-        reserva.save(
-            update_fields=["status", "cancelada_por", "data_encerramento"]
-        )
+        reserva.save(update_fields=["status", "cancelada_por", "data_encerramento"])
 
         if reserva_aprovada and livro.situacao == Livro.Situacao.RESERVADO:
             livro.situacao = Livro.Situacao.DISPONIVEL
@@ -678,11 +698,16 @@ def marcar_nao_retirada(request: HttpRequest, id: int) -> HttpResponse:
         )
         livro = Livro.objects.select_for_update().get(pk=reserva.interesse.livro.pk)
         if livro.responsavel != request.user:
-            raise PermissionDenied("Você não tem permissão para informar a não retirada.")
+            raise PermissionDenied(
+                "Você não tem permissão para informar a não retirada."
+            )
         if reserva.status != Reserva.Status.APROVADA:
             messages.warning(request, "Esta reserva não está aguardando retirada.")
             return redirect("core:detalhes_livro", id=livro.pk)
-        if not reserva.data_retirada_prevista or timezone.localdate() <= reserva.data_retirada_prevista:
+        if (
+            not reserva.data_retirada_prevista
+            or timezone.localdate() <= reserva.data_retirada_prevista
+        ):
             messages.warning(request, "A data prevista para retirada ainda não passou.")
             return redirect("core:detalhes_livro", id=livro.pk)
 
@@ -714,7 +739,9 @@ def iniciar_emprestimo(request: HttpRequest, id: int) -> HttpResponse:
         )
         livro = Livro.objects.select_for_update().get(pk=reserva.interesse.livro.pk)
         if livro.responsavel != request.user:
-            raise PermissionDenied("Você não tem permissão para iniciar este empréstimo.")
+            raise PermissionDenied(
+                "Você não tem permissão para iniciar este empréstimo."
+            )
         if reserva.status != Reserva.Status.APROVADA:
             messages.warning(request, "Esta reserva não está aprovada para retirada.")
             return redirect("core:detalhes_livro", id=livro.pk)
@@ -753,7 +780,9 @@ def devolver_livro(request: HttpRequest, id: int) -> HttpResponse:
             pk=emprestimo.reserva.interesse.livro.pk
         )
         if livro.responsavel != request.user:
-            raise PermissionDenied("Você não tem permissão para confirmar esta devolução.")
+            raise PermissionDenied(
+                "Você não tem permissão para confirmar esta devolução."
+            )
         if emprestimo.status != Emprestimo.Status.ATIVO:
             messages.warning(request, "Este empréstimo já foi encerrado.")
             return redirect("core:detalhes_livro", id=livro.pk)

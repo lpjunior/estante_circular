@@ -714,6 +714,7 @@ p {
 .capa-livro {
     display: grid;
     place-items: center;
+    overflow: hidden;
     background:
         linear-gradient(145deg, rgba(255, 255, 255, 0.1), transparent),
         var(--brand);
@@ -959,8 +960,10 @@ input[readonly] {
 
 .livro-capa-grande {
     min-height: 430px;
+    max-width: 100%;
     display: grid;
     place-items: center;
+    overflow: hidden;
     padding: 42px;
     background: var(--brand);
     border-radius: var(--radius-lg);
@@ -1329,6 +1332,108 @@ input[readonly] {
     font-weight: 800;
 }
 
+
+/* Capas de livros */
+
+.imagem-capa {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: inherit;
+}
+
+.imagem-capa-grande {
+    object-fit: cover;
+}
+
+.livro-capa-grande:has(.imagem-capa) {
+    padding: 0;
+}
+
+.capa-livro-compacta,
+.capa-livro-mini {
+    flex: 0 0 auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+}
+
+.capa-livro-compacta {
+    width: 82px;
+    height: 118px;
+}
+
+.capa-livro-mini {
+    width: 64px;
+    height: 92px;
+}
+
+.capa-livro-compacta span {
+    width: 48px;
+    height: 68px;
+    font-size: 1.35rem;
+}
+
+.capa-livro-mini span {
+    width: 38px;
+    height: 54px;
+    font-size: 1.1rem;
+}
+
+.informacao-livro-com-capa,
+.resumo-reserva-com-capa,
+.cabecalho-livro-com-capa,
+.livro-identificacao-com-capa,
+.resumo-livro-com-capa {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+}
+
+.card-gestao-topo-com-capa {
+    align-items: flex-start;
+    gap: 18px;
+}
+
+.livro-identificacao-com-capa {
+    min-width: 0;
+}
+
+.informacao-livro-com-capa > div:last-child,
+.resumo-reserva-com-capa > div:last-child,
+.cabecalho-livro-com-capa > div:last-child,
+.livro-identificacao-com-capa > div:last-child,
+.resumo-livro-dados {
+    min-width: 0;
+}
+
+.resumo-livro-com-capa {
+    align-items: stretch;
+}
+
+.resumo-livro-dados {
+    flex: 1 1 auto;
+    display: grid;
+    gap: 1px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--border);
+}
+
+.resumo-livro-dados > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 13px 15px;
+    background: var(--surface);
+}
+
+.resumo-livro-dados span {
+    color: var(--text-soft);
+}
+
 /* Responsividade */
 
 @media (max-width: 980px) {
@@ -1462,6 +1567,58 @@ input[readonly] {
 
     .timeline-marcador {
         left: 0;
+    }
+}
+
+
+@media (max-width: 640px) {
+    .capa-livro-compacta {
+        width: 68px;
+        height: 98px;
+    }
+
+    .capa-livro-mini {
+        width: 54px;
+        height: 78px;
+    }
+
+    .capa-livro-compacta span {
+        width: 40px;
+        height: 58px;
+        font-size: 1.15rem;
+    }
+
+    .capa-livro-mini span {
+        width: 32px;
+        height: 46px;
+        font-size: 1rem;
+    }
+
+    .informacao-livro-com-capa,
+    .resumo-reserva-com-capa,
+    .cabecalho-livro-com-capa,
+    .livro-identificacao-com-capa,
+    .resumo-livro-com-capa {
+        gap: 14px;
+    }
+
+    .card-gestao-topo-com-capa,
+    .cabecalho-livro-com-capa {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 420px) {
+    .informacao-livro-com-capa,
+    .resumo-reserva-com-capa,
+    .resumo-livro-com-capa {
+        flex-direction: column;
+    }
+
+    .resumo-livro-dados > div {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
     }
 }
 

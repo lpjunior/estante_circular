@@ -18,7 +18,7 @@
                 <h2>Informações do exemplar</h2>
                 <p>Todos os campos abaixo são obrigatórios.</p>
             </div>
-            <form method="post" novalidate>
+            <form method="post" novalidate enctype="multipart/form-data">
                 {% csrf_token %}
                 {% include 'core/partials/form_livro.html' %}
                 <div class="campo">

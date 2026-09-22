@@ -1,50 +1,66 @@
 {% extends 'core/base.html' %}
-{% block title %}Catálogo | Estante Circular{% endblock %}
+{% block title %}
+  Catálogo | Estante Circular
+{% endblock %}
 {% block content %}
-<section class="pagina">
+  <section class="pagina">
     <div class="container">
-        <header class="cabecalho-pagina">
-            <span class="etiqueta">Catálogo</span>
-            <h1>Encontre sua próxima leitura</h1>
-            <p>Pesquise por título, autor ou categoria e acompanhe a disponibilidade de cada exemplar.</p>
-        </header>
+      <header class="cabecalho-pagina">
+        <span class="etiqueta">Catálogo</span>
+        <h1>Encontre sua próxima leitura</h1>
+        <p>Pesquise por título, autor ou categoria e acompanhe a disponibilidade de cada exemplar.</p>
+      </header>
 
-        <form method="get" class="formulario-busca" role="search">
-            <label for="busca" class="sr-only">Pesquisar no catálogo</label>
-            <input type="search" id="busca" name="busca" value="{{ termo_busca }}" placeholder="Título, autor ou categoria">
-            <button type="submit" class="botao botao-principal">Pesquisar</button>
-            {% if pesquisa_realizada %}
-                <a href="{% url 'core:catalogo' %}" class="botao botao-terciario">Limpar</a>
-            {% endif %}
-        </form>
-
+      <form method="get" class="formulario-busca" role="search">
+        <label for="busca" class="sr-only">Pesquisar no catálogo</label>
+        <input type="search" id="busca" name="busca" value="{{ termo_busca }}" placeholder="Título, autor ou categoria" />
+        <button type="submit" class="botao botao-principal">Pesquisar</button>
         {% if pesquisa_realizada %}
-            <p class="resultado-pesquisa">Resultados para <strong>“{{ termo_busca }}”</strong></p>
+          <a href="{% url 'core:catalogo' %}" class="botao botao-terciario">Limpar</a>
         {% endif %}
+      </form>
 
-        {% if livros %}
-            <div class="grade-livros">
-                {% for livro in livros %}
-                    <article class="card-livro">
-                        <div class="capa-livro" aria-hidden="true"><span>{{ livro.titulo|slice:":1"|upper }}</span></div>
-                        <div class="card-livro-conteudo">
-                            <div class="card-meta">
-                                <span class="genero">{{ livro.genero_display }}</span>
-                                <span class="status-livro status-{{ livro.situacao|lower }}">{{ livro.get_situacao_display }}</span>
-                            </div>
-                            <h2>{{ livro.titulo }}</h2>
-                            <p>{{ livro.autor }}</p>
-                            <a href="{% url 'core:detalhes_livro' livro.pk %}" class="botao botao-secundario">Ver detalhes</a>
-                        </div>
-                    </article>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="estado-vazio">
-                <h2>Nenhum livro encontrado</h2>
-                <p>{% if pesquisa_realizada %}Tente pesquisar por outro título, autor ou categoria.{% else %}Ainda não há livros disponíveis no catálogo.{% endif %}</p>
-            </div>
-        {% endif %}
+      {% if pesquisa_realizada %}
+        <p class="resultado-pesquisa">
+          Resultados para <strong>“{{ termo_busca }}”</strong>
+        </p>
+      {% endif %}
+
+      {% if livros %}
+        <div class="grade-livros">
+          {% for livro in livros %}
+            <article class="card-livro">
+              <div class="capa-livro">
+                {% if livro.capa %}
+                  <img src="{{ livro.capa.url }}" alt="Capa do livro {{ livro.titulo }}" class="imagem-capa" />
+                {% else %}
+                  <span aria-hidden="true">{{ livro.titulo|slice:':1'|upper }}</span>
+                {% endif %}
+              </div>
+              <div class="card-livro-conteudo">
+                <div class="card-meta">
+                  <span class="genero">{{ livro.genero_display }}</span>
+                  <span class="status-livro status-{{ livro.situacao|lower }}">{{ livro.get_situacao_display }}</span>
+                </div>
+                <h2>{{ livro.titulo }}</h2>
+                <p>{{ livro.autor }}</p>
+                <a href="{% url 'core:detalhes_livro' livro.pk %}" class="botao botao-secundario">Ver detalhes</a>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="estado-vazio">
+          <h2>Nenhum livro encontrado</h2>
+          <p>
+            {% if pesquisa_realizada %}
+              Tente pesquisar por outro título, autor ou categoria.
+            {% else %}
+              Ainda não há livros disponíveis no catálogo.
+            {% endif %}
+          </p>
+        </div>
+      {% endif %}
     </div>
-</section>
+  </section>
 {% endblock %}

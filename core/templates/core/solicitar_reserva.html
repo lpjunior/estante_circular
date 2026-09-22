@@ -7,9 +7,22 @@
             <span class="etiqueta">Reserva</span>
             <h1>Solicitar retirada</h1>
             <p>Informe a data em que pretende retirar o exemplar. O responsável poderá aceitar a data ou sugerir uma nova opção para retirada.</p>
-            <div class="informacao-destaque">
-                <strong>{{ livro.titulo }}</strong>
-                <p>{{ livro.autor }}</p>
+            <div class="informacao-destaque informacao-livro-com-capa">
+                <div class="capa-livro capa-livro-mini">
+                    {% if livro.capa %}
+                        <img
+                            src="{{ livro.capa.url }}"
+                            alt="Capa do livro {{ livro.titulo }}"
+                            class="imagem-capa"
+                        >
+                    {% else %}
+                        <span aria-hidden="true">{{ livro.titulo|slice:":1"|upper }}</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <strong>{{ livro.titulo }}</strong>
+                    <p>{{ livro.autor }}</p>
+                </div>
             </div>
         </div>
 

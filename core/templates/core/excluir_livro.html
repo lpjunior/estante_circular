@@ -14,11 +14,24 @@
                 <h2>Confirme a remoção</h2>
                 <p>Esta ação não pode ser revertida pela interface atual.</p>
             </div>
-            <div class="resumo-livro">
-                <div><span>Título</span><strong>{{ livro.titulo }}</strong></div>
-                <div><span>Autor</span><strong>{{ livro.autor }}</strong></div>
-                <div><span>Categoria</span><strong>{{ livro.genero_display }}</strong></div>
-                <div><span>Conservação</span><strong>{{ livro.estado_conservacao_display }}</strong></div>
+            <div class="resumo-livro resumo-livro-com-capa">
+                <div class="capa-livro capa-livro-mini">
+                    {% if livro.capa %}
+                        <img
+                            src="{{ livro.capa.url }}"
+                            alt="Capa do livro {{ livro.titulo }}"
+                            class="imagem-capa"
+                        >
+                    {% else %}
+                        <span aria-hidden="true">{{ livro.titulo|slice:":1"|upper }}</span>
+                    {% endif %}
+                </div>
+                <div class="resumo-livro-dados">
+                    <div><span>Título</span><strong>{{ livro.titulo }}</strong></div>
+                    <div><span>Autor</span><strong>{{ livro.autor }}</strong></div>
+                    <div><span>Categoria</span><strong>{{ livro.genero_display }}</strong></div>
+                    <div><span>Conservação</span><strong>{{ livro.estado_conservacao_display }}</strong></div>
+                </div>
             </div>
             <form method="post">
                 {% csrf_token %}
